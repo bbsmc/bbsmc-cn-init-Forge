@@ -55,7 +55,7 @@ public class HostingTab implements Tab {
         if (tabArea != null) {
             var font = Minecraft.getInstance().font;
             String footerText = "* 致力为您提供稳定、流畅、24小时不断联的服务器，打造更优、更稳、更好的游戏体验！无人值守也可玩！";
-            int footerY = tabArea.top() + tabArea.height() - 18;
+            int footerY = tabArea.top() + tabArea.height() - 21;
 
             // 绿色渐变：从浅绿色到深绿色再回到浅绿色
             int textWidth = font.width(footerText);

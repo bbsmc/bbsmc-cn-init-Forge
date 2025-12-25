@@ -10,7 +10,7 @@ public class HostingPackageList extends ObjectSelectionList<HostingPackageList.E
     public HostingPackageList(Minecraft minecraft, int width, int height, int y0, int y1, int itemHeight) {
         super(minecraft, width, height, y0, y1, itemHeight);
 
-        for (HostingPackage pkg : HostingPackage.ALL_PACKAGES) {
+        for (HostingPackage pkg : HostingPackage.getAllPackages()) {
             this.addEntry(new Entry(pkg));
         }
     }
@@ -50,6 +50,20 @@ public class HostingPackageList extends ObjectSelectionList<HostingPackageList.E
             int line3Y = top + 32;
 
             graphics.drawString(font, pkg.getName(), textLeft, line1Y, pkg.getColor());
+
+            // 渲染标签（从 JSON 获取）
+            String tag = pkg.getTag();
+            if (tag != null && !tag.isEmpty()) {
+                int nameWidth = font.width(pkg.getName());
+                int tagX = textLeft + nameWidth + 6;
+                int tagY = line1Y;
+                int tagWidth = font.width(tag) + 6;
+                int tagHeight = 10;
+                // 使用套餐颜色作为标签背景，或使用红色作为默认
+                int tagBgColor = tag.equals("热销") ? 0xFFFF5555 : pkg.getColor();
+                graphics.fill(tagX, tagY - 1, tagX + tagWidth, tagY + tagHeight, tagBgColor);
+                graphics.drawString(font, tag, tagX + 3, tagY, 0xFFFFFFFF);
+            }
 
             String priceText = "¥" + pkg.getPrice() + "/月";
             int priceWidth = font.width(priceText);

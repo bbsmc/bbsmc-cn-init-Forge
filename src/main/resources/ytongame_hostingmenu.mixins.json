@@ -8,9 +8,10 @@
   ],
   "client": [
     "CreateWorldScreenMixin",
-    "TabNavigationBarBuilderMixin",
+    "SelectWorldScreenMixin",
+    "ServerSelectionListMixin",
     "TabButtonMixin",
-    "SelectWorldScreenMixin"
+    "TabNavigationBarBuilderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
