@@ -1,6 +1,8 @@
 package moe.ytonidc.ytongame_hostingmenu.mixin;
 
+import moe.ytonidc.ytongame_hostingmenu.Config;
 import moe.ytonidc.ytongame_hostingmenu.client.HostingTab;
+import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.tabs.Tab;
@@ -15,6 +17,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.net.URI;
 
 @Mixin(CreateWorldScreen.class)
 public abstract class CreateWorldScreenMixin extends Screen {
@@ -86,12 +90,31 @@ public abstract class CreateWorldScreenMixin extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Tab currentTab = tabManager.getCurrentTab();
         if (currentTab instanceof HostingTab hostingTab) {
+            // 检查是否点击了订阅服务器按钮
+            Button createButton = ytongame$findCreateButton();
+            if (createButton != null && button == 0) {
+                if (mouseX >= createButton.getX() && mouseX <= createButton.getX() + createButton.getWidth() &&
+                    mouseY >= createButton.getY() && mouseY <= createButton.getY() + createButton.getHeight()) {
+                    ytongame$openPurchaseLink();
+                    return true;
+                }
+            }
+
             var list = hostingTab.getPackageList();
             if (list != null && list.mouseClicked(mouseX, mouseY, button)) {
                 return true;
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Unique
+    private void ytongame$openPurchaseLink() {
+        try {
+            Util.getPlatform().openUri(new URI(Config.getPurchaseUrl()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

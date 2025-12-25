@@ -1,13 +1,9 @@
 package moe.ytonidc.ytongame_hostingmenu.client;
 
-import moe.ytonidc.ytongame_hostingmenu.Config;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.network.chat.Component;
-
-import java.net.URI;
 
 public class HostingPackageList extends ObjectSelectionList<HostingPackageList.Entry> {
 
@@ -57,7 +53,7 @@ public class HostingPackageList extends ObjectSelectionList<HostingPackageList.E
 
             String priceText = "¥" + pkg.getPrice() + "/月";
             int priceWidth = font.width(priceText);
-            graphics.drawString(font, priceText, left + width - priceWidth - 70, line1Y, 0xFFFFFF55);
+            graphics.drawString(font, priceText, left + width - priceWidth - 10, line1Y, 0xFFFFFF55);
 
             String cpuLabel = "CPU: ";
             graphics.drawString(font, cpuLabel, textLeft, line2Y, 0xFFAAAAAA);  // 灰色
@@ -75,51 +71,6 @@ public class HostingPackageList extends ObjectSelectionList<HostingPackageList.E
 
             String playersText = "推荐: " + pkg.getRecommendedPlayers();
             graphics.drawString(font, playersText, textLeft + 250, line3Y, 0xFFAAAAAA);
-
-            int buttonX = left + width - 60;
-            int buttonY = top + (height - 20) / 2;
-            boolean buttonHovered = mouseX >= buttonX && mouseX <= buttonX + 55 &&
-                                   mouseY >= buttonY && mouseY <= buttonY + 20;
-
-            int buttonColor = buttonHovered ? 0xFF4080FF : 0xFF2060D0;
-            graphics.fill(buttonX, buttonY, buttonX + 55, buttonY + 20, buttonColor);
-            graphics.fill(buttonX, buttonY, buttonX + 55, buttonY + 1, 0xFF6090FF);
-            graphics.fill(buttonX, buttonY + 19, buttonX + 55, buttonY + 20, 0xFF1040A0);
-
-            String buyText = "购买";
-            int buyTextWidth = font.width(buyText);
-            graphics.drawString(font, buyText, buttonX + (55 - buyTextWidth) / 2, buttonY + 6, 0xFFFFFFFF);
-        }
-
-        @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (button == 0) {
-                int left = HostingPackageList.this.getRowLeft();
-                int width = HostingPackageList.this.getRowWidth();
-                int top = 0;
-
-                for (int i = 0; i < HostingPackageList.this.children().size(); i++) {
-                    if (HostingPackageList.this.children().get(i) == this) {
-                        break;
-                    }
-                }
-
-                int buttonX = left + width - 60;
-
-                if (mouseX >= buttonX && mouseX <= buttonX + 55) {
-                    openPurchaseLink();
-                    return true;
-                }
-            }
-            return super.mouseClicked(mouseX, mouseY, button);
-        }
-
-        private void openPurchaseLink() {
-            try {
-                Util.getPlatform().openUri(new URI(Config.getPurchaseUrl()));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
         @Override
