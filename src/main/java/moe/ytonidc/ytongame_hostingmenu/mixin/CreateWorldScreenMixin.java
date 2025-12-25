@@ -48,6 +48,39 @@ public abstract class CreateWorldScreenMixin extends Screen {
         return null;
     }
 
+    @Inject(method = "init", at = @At("TAIL"))
+    private void onInit(CallbackInfo ci) {
+        if (HostingTab.shouldOpenHostingTab) {
+            HostingTab.shouldOpenHostingTab = false;
+            // 延迟切换到 Hosting 标签，等待 TabNavigationBar 完成构建
+            for (var tab : ytongame$getAllTabs()) {
+                if (tab instanceof HostingTab) {
+                    tabManager.setCurrentTab(tab, true);
+                    break;
+                }
+            }
+        }
+    }
+
+    @Unique
+    private Iterable<Tab> ytongame$getAllTabs() {
+        java.util.List<Tab> tabs = new java.util.ArrayList<>();
+        for (var child : this.children()) {
+            if (child instanceof net.minecraft.client.gui.components.tabs.TabNavigationBar navBar) {
+                try {
+                    var field = navBar.getClass().getDeclaredField("tabs");
+                    field.setAccessible(true);
+                    @SuppressWarnings("unchecked")
+                    var tabList = (com.google.common.collect.ImmutableList<Tab>) field.get(navBar);
+                    return tabList;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return tabs;
+    }
+
     @Inject(method = "render", at = @At("TAIL"))
     private void onRender(GuiGraphics graphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         Tab currentTab = tabManager.getCurrentTab();

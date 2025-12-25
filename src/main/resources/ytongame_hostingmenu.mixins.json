@@ -9,7 +9,8 @@
   "client": [
     "CreateWorldScreenMixin",
     "TabNavigationBarBuilderMixin",
-    "TabButtonMixin"
+    "TabButtonMixin",
+    "SelectWorldScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
