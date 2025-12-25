@@ -1,8 +1,7 @@
 package moe.ytonidc.ytongame_hostingmenu.mixin;
 
-import com.google.common.collect.ImmutableList;
 import moe.ytonidc.ytongame_hostingmenu.client.HostingTab;
-import net.minecraft.client.gui.components.TabButton;
+import moe.ytonidc.ytongame_hostingmenu.client.RegionDetector;
 import net.minecraft.client.gui.components.tabs.Tab;
 import net.minecraft.client.gui.components.tabs.TabManager;
 import net.minecraft.client.gui.components.tabs.TabNavigationBar;
@@ -12,10 +11,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(TabNavigationBar.Builder.class)
@@ -27,6 +24,11 @@ public class TabNavigationBarBuilderMixin {
 
     @Inject(method = "build", at = @At("HEAD"))
     private void onBuild(CallbackInfoReturnable<TabNavigationBar> cir) {
+        // 仅对中国大陆用户显示 Hosting 标签
+        if (!RegionDetector.shouldShowAds()) {
+            return;
+        }
+
         boolean hasGameTab = false;
         CreateWorldScreen screen = null;
 

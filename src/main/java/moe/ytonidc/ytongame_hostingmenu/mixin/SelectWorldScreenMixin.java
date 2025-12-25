@@ -1,6 +1,7 @@
 package moe.ytonidc.ytongame_hostingmenu.mixin;
 
 import moe.ytonidc.ytongame_hostingmenu.client.HostingTab;
+import moe.ytonidc.ytongame_hostingmenu.client.RegionDetector;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -24,6 +25,11 @@ public abstract class SelectWorldScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void onInit(CallbackInfo ci) {
+        // 仅对中国大陆用户显示 Hosting 按钮
+        if (!RegionDetector.shouldShowAds()) {
+            return;
+        }
+
         if (searchBox != null) {
             int buttonWidth = 60;
             int buttonX = searchBox.getX() + searchBox.getWidth() + 4;

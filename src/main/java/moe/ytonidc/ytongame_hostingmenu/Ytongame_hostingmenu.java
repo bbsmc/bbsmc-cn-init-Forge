@@ -17,7 +17,7 @@ public class Ytongame_hostingmenu {
     public Ytongame_hostingmenu() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
 
-        // 加载套餐数据
-        HostingPackage.loadFromResources();
+        // 异步加载套餐数据（优先远程，失败则本地）
+        HostingPackage.loadAsync();
     }
 }

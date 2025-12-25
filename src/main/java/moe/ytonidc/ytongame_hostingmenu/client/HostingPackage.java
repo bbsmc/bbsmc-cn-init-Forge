@@ -8,11 +8,18 @@ import moe.ytonidc.ytongame_hostingmenu.Ytongame_hostingmenu;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class HostingPackage {
+    private static final String REMOTE_JSON_URL = "https://cdn.bbsmc.net/ytonidc/hosting_packages.json";
+    private static final int CONNECTION_TIMEOUT = 5000;
+    private static final int READ_TIMEOUT = 5000;
+
     private final String name;
     private final String processor;
     private final String memory;
@@ -25,6 +32,7 @@ public class HostingPackage {
     private final String tag;
 
     private static List<HostingPackage> ALL_PACKAGES = new ArrayList<>();
+    private static boolean isLoaded = false;
 
     public HostingPackage(String name, String processor, String memory,
                           int defaultBackupSlots, int maxBackupSlots,
@@ -56,12 +64,73 @@ public class HostingPackage {
         return ALL_PACKAGES;
     }
 
+    public static boolean isLoaded() {
+        return isLoaded;
+    }
+
+    /**
+     * 异步加载套餐数据：优先从远程获取，失败则从本地加载
+     */
+    public static void loadAsync() {
+        CompletableFuture.runAsync(() -> {
+            // 先尝试从远程加载
+            if (loadFromRemote()) {
+                Ytongame_hostingmenu.LOGGER.info("Loaded {} hosting packages from remote", ALL_PACKAGES.size());
+                isLoaded = true;
+                return;
+            }
+
+            // 远程失败，从本地资源加载
+            Ytongame_hostingmenu.LOGGER.warn("Failed to load from remote, falling back to local resources");
+            loadFromResources();
+            isLoaded = true;
+        });
+    }
+
+    /**
+     * 从远程 URL 加载 JSON
+     */
+    private static boolean loadFromRemote() {
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(REMOTE_JSON_URL);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(CONNECTION_TIMEOUT);
+            connection.setReadTimeout(READ_TIMEOUT);
+            connection.setRequestProperty("User-Agent", "YtonGame-HostingMenu/" + Ytongame_hostingmenu.MODID);
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (InputStream is = connection.getInputStream()) {
+                    return loadFromStream(is);
+                }
+            } else {
+                Ytongame_hostingmenu.LOGGER.warn("Remote JSON returned status code: {}", responseCode);
+                return false;
+            }
+        } catch (Exception e) {
+            Ytongame_hostingmenu.LOGGER.warn("Failed to load hosting packages from remote: {}", e.getMessage());
+            return false;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
+    /**
+     * 从本地资源加载 JSON
+     */
     public static void loadFromResources() {
         try {
             InputStream is = HostingPackage.class.getResourceAsStream("/hosting_packages.json");
             if (is != null) {
-                loadFromStream(is);
-                Ytongame_hostingmenu.LOGGER.info("Loaded {} hosting packages from resources", ALL_PACKAGES.size());
+                if (loadFromStream(is)) {
+                    Ytongame_hostingmenu.LOGGER.info("Loaded {} hosting packages from resources", ALL_PACKAGES.size());
+                } else {
+                    loadDefaultPackages();
+                }
             } else {
                 Ytongame_hostingmenu.LOGGER.error("Could not find hosting_packages.json in resources");
                 loadDefaultPackages();
@@ -72,7 +141,10 @@ public class HostingPackage {
         }
     }
 
-    public static void loadFromStream(InputStream is) {
+    /**
+     * 从 InputStream 解析 JSON
+     */
+    private static boolean loadFromStream(InputStream is) {
         try (InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
             JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
             JsonArray packagesArray = root.getAsJsonArray("packages");
@@ -90,11 +162,9 @@ public class HostingPackage {
                 String recommendedPlayers = obj.get("recommendedPlayers").getAsString();
                 int price = obj.get("price").getAsInt();
 
-                // 解析颜色（支持 "0xFF888888" 格式）
                 String colorStr = obj.get("color").getAsString();
                 int color = parseColor(colorStr);
 
-                // 解析标签（可能为 null）
                 String tag = null;
                 if (obj.has("tag") && !obj.get("tag").isJsonNull()) {
                     tag = obj.get("tag").getAsString();
@@ -105,9 +175,10 @@ public class HostingPackage {
             }
 
             ALL_PACKAGES = packages;
+            return true;
         } catch (Exception e) {
             Ytongame_hostingmenu.LOGGER.error("Failed to parse hosting packages JSON", e);
-            loadDefaultPackages();
+            return false;
         }
     }
 

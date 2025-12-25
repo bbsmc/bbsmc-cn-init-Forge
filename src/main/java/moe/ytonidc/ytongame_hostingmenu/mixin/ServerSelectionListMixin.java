@@ -1,6 +1,7 @@
 package moe.ytonidc.ytongame_hostingmenu.mixin;
 
 import moe.ytonidc.ytongame_hostingmenu.client.MultiPlayerAdEntry;
+import moe.ytonidc.ytongame_hostingmenu.client.RegionDetector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.multiplayer.ServerSelectionList;
@@ -20,6 +21,9 @@ public class ServerSelectionListMixin extends ObjectSelectionList<ServerSelectio
             at = @At("TAIL")
     )
     private void addAdEntry(CallbackInfo ci) {
-        addEntry(new MultiPlayerAdEntry(this.minecraft));
+        // 仅对中国大陆用户显示广告
+        if (RegionDetector.shouldShowAds()) {
+            addEntry(new MultiPlayerAdEntry(this.minecraft));
+        }
     }
 }
