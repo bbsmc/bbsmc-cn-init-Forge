@@ -1,5 +1,6 @@
 package moe.ytonidc.ytongame_hostingmenu.client;
 
+import moe.ytonidc.ytongame_hostingmenu.Config;
 import moe.ytonidc.ytongame_hostingmenu.Ytongame_hostingmenu;
 import net.minecraft.client.Minecraft;
 
@@ -37,9 +38,14 @@ public class RegionDetector {
 
     /**
      * 判断是否应该显示广告
-     * 只有当语言为简体中文时才显示
+     * 需要同时满足：配置启用 + 语言为简体中文
      */
     public static boolean shouldShowAds() {
+        // 检查配置是否启用广告
+        if (!Config.isAdsEnabled()) {
+            return false;
+        }
+
         // 延迟检测，确保 Minecraft 实例已初始化
         if (isMainlandChina == null) {
             detect();
