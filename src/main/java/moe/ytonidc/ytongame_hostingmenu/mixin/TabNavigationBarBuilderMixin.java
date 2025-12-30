@@ -34,16 +34,21 @@ public class TabNavigationBarBuilderMixin {
 
         for (Tab tab : tabs) {
             String className = tab.getClass().getName();
-            if (className.contains("CreateWorldScreen$GameTab")) {
+            if (className.contains("CreateWorldScreen$GameTab") || className.contains("CreateWorldScreen$")) {
                 hasGameTab = true;
+                // 遍历所有字段找到 CreateWorldScreen 类型的外部类引用
                 try {
-                    var field = tab.getClass().getDeclaredField("this$0");
-                    field.setAccessible(true);
-                    screen = (CreateWorldScreen) field.get(tab);
+                    for (var field : tab.getClass().getDeclaredFields()) {
+                        if (CreateWorldScreen.class.isAssignableFrom(field.getType())) {
+                            field.setAccessible(true);
+                            screen = (CreateWorldScreen) field.get(tab);
+                            break;
+                        }
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                break;
+                if (screen != null) break;
             }
         }
 
