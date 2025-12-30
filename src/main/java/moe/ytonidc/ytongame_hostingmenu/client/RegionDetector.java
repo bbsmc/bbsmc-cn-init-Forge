@@ -11,12 +11,17 @@ public class RegionDetector {
 
     /**
      * 判断是否应该显示广告
-     * 需要同时满足：配置启用 + 语言为简体中文
+     * 需要满足：配置启用广告，且（不限制语言 或 语言为简体中文）
      */
     public static boolean shouldShowAds() {
         // 检查配置是否启用广告
         if (!Config.isAdsEnabled()) {
             return false;
+        }
+
+        // 如果不限制仅中文用户，直接返回 true
+        if (!Config.isChineseOnly()) {
+            return true;
         }
 
         // 每次都实时检测当前语言设置

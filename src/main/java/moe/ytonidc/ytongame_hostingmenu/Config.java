@@ -17,10 +17,15 @@ public class Config {
             .comment("是否启用广告功能（Hosting 标签页、多人游戏广告等）")
             .define("enableAds", true);
 
+    private static final ForgeConfigSpec.BooleanValue CHINESE_ONLY = BUILDER
+            .comment("是否仅对简体中文用户显示广告")
+            .define("chineseOnly", true);
+
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
     private static String purchaseUrl;
     private static boolean enableAds;
+    private static boolean chineseOnly;
 
     public static String getPurchaseUrl() {
         return purchaseUrl;
@@ -30,9 +35,14 @@ public class Config {
         return enableAds;
     }
 
+    public static boolean isChineseOnly() {
+        return chineseOnly;
+    }
+
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
         purchaseUrl = PURCHASE_URL.get();
         enableAds = ENABLE_ADS.get();
+        chineseOnly = CHINESE_ONLY.get();
     }
 }
