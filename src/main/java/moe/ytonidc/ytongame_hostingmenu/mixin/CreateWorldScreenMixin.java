@@ -2,11 +2,13 @@ package moe.ytonidc.ytongame_hostingmenu.mixin;
 
 import moe.ytonidc.ytongame_hostingmenu.Config;
 import moe.ytonidc.ytongame_hostingmenu.client.HostingTab;
+import moe.ytonidc.ytongame_hostingmenu.mixin.accessor.TabNavigationBarAccessor;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.tabs.Tab;
 import net.minecraft.client.gui.components.tabs.TabManager;
+import net.minecraft.client.gui.components.tabs.TabNavigationBar;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.network.chat.Component;
@@ -19,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.net.URI;
+import java.util.Collections;
 
 @Mixin(CreateWorldScreen.class)
 public abstract class CreateWorldScreenMixin extends Screen {
@@ -64,25 +67,12 @@ public abstract class CreateWorldScreenMixin extends Screen {
 
     @Unique
     private Iterable<Tab> ytongame$getAllTabs() {
-        java.util.List<Tab> tabs = new java.util.ArrayList<>();
         for (var child : this.children()) {
-            if (child instanceof net.minecraft.client.gui.components.tabs.TabNavigationBar navBar) {
-                try {
-                    // 遍历所有字段找到 ImmutableList 类型的 tabs 字段
-                    for (var field : navBar.getClass().getDeclaredFields()) {
-                        if (com.google.common.collect.ImmutableList.class.isAssignableFrom(field.getType())) {
-                            field.setAccessible(true);
-                            @SuppressWarnings("unchecked")
-                            var tabList = (com.google.common.collect.ImmutableList<Tab>) field.get(navBar);
-                            return tabList;
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            if (child instanceof TabNavigationBar navBar) {
+                return ((TabNavigationBarAccessor) navBar).getTabs();
             }
         }
-        return tabs;
+        return Collections.emptyList();
     }
 
     @Inject(method = "render", at = @At("TAIL"))

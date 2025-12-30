@@ -11,7 +11,8 @@
     "SelectWorldScreenMixin",
     "ServerSelectionListMixin",
     "TabButtonMixin",
-    "TabNavigationBarBuilderMixin"
+    "TabNavigationBarBuilderMixin",
+    "accessor.TabNavigationBarAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

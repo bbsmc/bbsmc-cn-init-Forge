@@ -2,6 +2,7 @@ package moe.ytonidc.ytongame_hostingmenu.mixin;
 
 import moe.ytonidc.ytongame_hostingmenu.client.HostingTab;
 import moe.ytonidc.ytongame_hostingmenu.client.RegionDetector;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.tabs.Tab;
 import net.minecraft.client.gui.components.tabs.TabManager;
 import net.minecraft.client.gui.components.tabs.TabNavigationBar;
@@ -29,41 +30,19 @@ public class TabNavigationBarBuilderMixin {
             return;
         }
 
-        boolean hasGameTab = false;
-        CreateWorldScreen screen = null;
+        // 检查当前屏幕是否为 CreateWorldScreen
+        if (!(Minecraft.getInstance().screen instanceof CreateWorldScreen screen)) {
+            return;
+        }
 
+        // 检查是否已有 HostingTab
         for (Tab tab : tabs) {
-            String className = tab.getClass().getName();
-            if (className.contains("CreateWorldScreen$GameTab") || className.contains("CreateWorldScreen$")) {
-                hasGameTab = true;
-                // 遍历所有字段找到 CreateWorldScreen 类型的外部类引用
-                try {
-                    for (var field : tab.getClass().getDeclaredFields()) {
-                        if (CreateWorldScreen.class.isAssignableFrom(field.getType())) {
-                            field.setAccessible(true);
-                            screen = (CreateWorldScreen) field.get(tab);
-                            break;
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (screen != null) break;
+            if (tab instanceof HostingTab) {
+                return;
             }
         }
 
-        if (hasGameTab && screen != null) {
-            boolean hasHostingTab = false;
-            for (Tab tab : tabs) {
-                if (tab instanceof HostingTab) {
-                    hasHostingTab = true;
-                    break;
-                }
-            }
-
-            if (!hasHostingTab) {
-                tabs.add(new HostingTab(screen));
-            }
-        }
+        // 添加 HostingTab
+        tabs.add(new HostingTab(screen));
     }
 }
