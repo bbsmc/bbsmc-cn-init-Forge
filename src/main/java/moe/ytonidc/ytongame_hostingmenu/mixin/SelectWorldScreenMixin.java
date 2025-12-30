@@ -36,7 +36,7 @@ public abstract class SelectWorldScreenMixin extends Screen {
             int buttonY = searchBox.getY();
             int buttonHeight = searchBox.getHeight();
 
-            Button hostingButton = Button.builder(Component.literal("Hosting"), button -> {
+            Button hostingButton = Button.builder(Component.literal("联机开服"), button -> {
                 HostingTab.shouldOpenHostingTab = true;
                 CreateWorldScreen.openFresh(this.minecraft, this);
             }).bounds(buttonX, buttonY, buttonWidth, buttonHeight).build();
