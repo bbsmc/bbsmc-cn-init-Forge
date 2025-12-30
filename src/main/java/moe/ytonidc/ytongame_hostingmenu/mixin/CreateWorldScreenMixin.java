@@ -68,11 +68,15 @@ public abstract class CreateWorldScreenMixin extends Screen {
         for (var child : this.children()) {
             if (child instanceof net.minecraft.client.gui.components.tabs.TabNavigationBar navBar) {
                 try {
-                    var field = navBar.getClass().getDeclaredField("tabs");
-                    field.setAccessible(true);
-                    @SuppressWarnings("unchecked")
-                    var tabList = (com.google.common.collect.ImmutableList<Tab>) field.get(navBar);
-                    return tabList;
+                    // 遍历所有字段找到 ImmutableList 类型的 tabs 字段
+                    for (var field : navBar.getClass().getDeclaredFields()) {
+                        if (com.google.common.collect.ImmutableList.class.isAssignableFrom(field.getType())) {
+                            field.setAccessible(true);
+                            @SuppressWarnings("unchecked")
+                            var tabList = (com.google.common.collect.ImmutableList<Tab>) field.get(navBar);
+                            return tabList;
+                        }
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
