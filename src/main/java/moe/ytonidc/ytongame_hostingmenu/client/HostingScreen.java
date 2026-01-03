@@ -69,6 +69,10 @@ public class HostingScreen extends Screen {
             packageList.render(poseStack, mouseX, mouseY, partialTick);
         }
 
+        // 绘制底部背景遮挡，确保文字区域在最上层
+        int footerTop = this.height - 32;
+        fill(poseStack, 0, footerTop, this.width, this.height, 0xC0101010);
+
         super.render(poseStack, mouseX, mouseY, partialTick);
 
         // 绘制标题
@@ -77,7 +81,7 @@ public class HostingScreen extends Screen {
         // 绘制底部文字
         var font = Minecraft.getInstance().font;
         String footerText = "* 致力为您提供稳定、流畅、24小时不断联的服务器，打造更优、更稳、更好的游戏体验！无人值守也可玩！";
-        int footerY = this.height - 16;
+        int footerY = this.height - 20;
 
         // 绿色渐变：从浅绿色到深绿色再回到浅绿色
         int textWidth = font.width(footerText);
