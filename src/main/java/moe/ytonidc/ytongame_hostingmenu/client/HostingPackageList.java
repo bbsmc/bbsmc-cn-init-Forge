@@ -1,7 +1,8 @@
 package moe.ytonidc.ytongame_hostingmenu.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.network.chat.Component;
 
@@ -33,23 +34,23 @@ public class HostingPackageList extends ObjectSelectionList<HostingPackageList.E
         }
 
         @Override
-        public void render(GuiGraphics graphics, int index, int top, int left, int width, int height,
+        public void render(PoseStack poseStack, int index, int top, int left, int width, int height,
                           int mouseX, int mouseY, boolean hovering, float partialTick) {
             var font = minecraft.font;
 
             if (hovering) {
-                graphics.fill(left - 2, top - 2, left + width + 2, top + height + 2, 0x80808080);
+                GuiComponent.fill(poseStack, left - 2, top - 2, left + width + 2, top + height + 2, 0x80808080);
             }
 
             int borderColor = pkg.getColor();
-            graphics.fill(left, top, left + 4, top + height, borderColor);
+            GuiComponent.fill(poseStack, left, top, left + 4, top + height, borderColor);
 
             int textLeft = left + 12;
             int line1Y = top + 4;
             int line2Y = top + 18;
             int line3Y = top + 32;
 
-            graphics.drawString(font, pkg.getName(), textLeft, line1Y, pkg.getColor());
+            font.draw(poseStack, pkg.getName(), textLeft, line1Y, pkg.getColor());
 
             // 渲染标签（从 JSON 获取）
             String tag = pkg.getTag();
@@ -61,30 +62,30 @@ public class HostingPackageList extends ObjectSelectionList<HostingPackageList.E
                 int tagHeight = 10;
                 // 使用套餐颜色作为标签背景，或使用红色作为默认
                 int tagBgColor = tag.equals("热销") ? 0xFFFF5555 : pkg.getColor();
-                graphics.fill(tagX, tagY - 1, tagX + tagWidth, tagY + tagHeight, tagBgColor);
-                graphics.drawString(font, tag, tagX + 3, tagY, 0xFFFFFFFF);
+                GuiComponent.fill(poseStack, tagX, tagY - 1, tagX + tagWidth, tagY + tagHeight, tagBgColor);
+                font.draw(poseStack, tag, tagX + 3, tagY, 0xFFFFFFFF);
             }
 
             String priceText = "¥" + pkg.getPrice() + "/月";
             int priceWidth = font.width(priceText);
-            graphics.drawString(font, priceText, left + width - priceWidth - 10, line1Y, 0xFFFFFF55);
+            font.draw(poseStack, priceText, left + width - priceWidth - 10, line1Y, 0xFFFFFF55);
 
             String cpuLabel = "CPU: ";
-            graphics.drawString(font, cpuLabel, textLeft, line2Y, 0xFFAAAAAA);  // 灰色
+            font.draw(poseStack, cpuLabel, textLeft, line2Y, 0xFFAAAAAA);  // 灰色
             int cpuLabelWidth = font.width(cpuLabel);
-            graphics.drawString(font, pkg.getProcessor(), textLeft + cpuLabelWidth, line2Y, 0xFFFFAA00);  // 金色
+            font.draw(poseStack, pkg.getProcessor(), textLeft + cpuLabelWidth, line2Y, 0xFFFFAA00);  // 金色
 
             String memoryText = "内存: " + pkg.getMemory();
-            graphics.drawString(font, memoryText, textLeft, line3Y, 0xFFAAAAAA);
+            font.draw(poseStack, memoryText, textLeft, line3Y, 0xFFAAAAAA);
 
             String backupText = "备份: " + pkg.getDefaultBackupSlots() + "/" + pkg.getMaxBackupSlots();
-            graphics.drawString(font, backupText, textLeft + 80, line3Y, 0xFFAAAAAA);
+            font.draw(poseStack, backupText, textLeft + 80, line3Y, 0xFFAAAAAA);
 
             String storageText = "存储: " + pkg.getStorage();
-            graphics.drawString(font, storageText, textLeft + 160, line3Y, 0xFFAAAAAA);
+            font.draw(poseStack, storageText, textLeft + 160, line3Y, 0xFFAAAAAA);
 
             String playersText = "推荐: " + pkg.getRecommendedPlayers();
-            graphics.drawString(font, playersText, textLeft + 250, line3Y, 0xFFAAAAAA);
+            font.draw(poseStack, playersText, textLeft + 250, line3Y, 0xFFAAAAAA);
         }
 
         @Override

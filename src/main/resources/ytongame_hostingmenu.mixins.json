@@ -9,10 +9,7 @@
   "client": [
     "CreateWorldScreenMixin",
     "SelectWorldScreenMixin",
-    "ServerSelectionListMixin",
-    "TabButtonMixin",
-    "TabNavigationBarBuilderMixin",
-    "accessor.TabNavigationBarAccessor"
+    "ServerSelectionListMixin"
   ],
   "injectors": {
     "defaultRequire": 1

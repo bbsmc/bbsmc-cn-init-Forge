@@ -1,11 +1,11 @@
 package moe.ytonidc.ytongame_hostingmenu.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import moe.ytonidc.ytongame_hostingmenu.Ytongame_hostingmenu;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.multiplayer.ServerSelectionList;
-import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,10 +22,11 @@ public class MultiPlayerAdEntry extends ServerSelectionList.Entry {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int itemId, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isMouseOver, float partialTicks) {
+    public void render(PoseStack poseStack, int itemId, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isMouseOver, float partialTicks) {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        graphics.blit(Ytongame_hostingmenu.hostingLogo, left, top, 0, 0.0f, 0.0f, entryHeight, entryHeight, entryHeight, entryHeight);
-        graphics.drawString(this.minecraft.font, "如果您需要24H不间断的服务器? 点击我跳转详情!", left + 32 + 3, top + 1, 16777215);
+        RenderSystem.setShaderTexture(0, Ytongame_hostingmenu.hostingLogo);
+        GuiComponent.blit(poseStack, left, top, 0, 0.0f, 0.0f, entryHeight, entryHeight, entryHeight, entryHeight);
+        this.minecraft.font.draw(poseStack, "如果您需要24H不间断的服务器? 点击我跳转详情!", left + 32 + 3, top + 1, 16777215);
 
         // 渐变色渲染描述文字（两行）
         String line1 = "推荐选用昱通游戏，我们收录且支持数百种整合包一键联机（仍在更新）";
@@ -33,12 +34,12 @@ public class MultiPlayerAdEntry extends ServerSelectionList.Entry {
         int textStartX = left + 32 + 3;
 
         // 渲染第一行（绿色渐变）
-        renderGradientText(graphics, line1, textStartX, top + 12, true);
+        renderGradientText(poseStack, line1, textStartX, top + 12, true);
         // 渲染第二行（黄橙渐变）
-        renderGradientText(graphics, line2, textStartX, top + 12 + 9, false);
+        renderGradientText(poseStack, line2, textStartX, top + 12 + 9, false);
     }
 
-    private void renderGradientText(GuiGraphics graphics, String text, int startX, int y, boolean useGreen) {
+    private void renderGradientText(PoseStack poseStack, String text, int startX, int y, boolean useGreen) {
         int charX = startX;
         int textLength = text.length();
 
@@ -47,7 +48,7 @@ public class MultiPlayerAdEntry extends ServerSelectionList.Entry {
             float progress = (float) i / (textLength - 1);
             int color = useGreen ? getGreenGradientColor(progress) : getYellowOrangeGradientColor(progress);
 
-            graphics.drawString(this.minecraft.font, ch, charX, y, color);
+            this.minecraft.font.draw(poseStack, ch, charX, y, color);
             charX += this.minecraft.font.width(ch);
         }
     }
@@ -99,8 +100,7 @@ public class MultiPlayerAdEntry extends ServerSelectionList.Entry {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
-            HostingTab.shouldOpenHostingTab = true;
-            CreateWorldScreen.openFresh(this.minecraft, this.minecraft.screen);
+            this.minecraft.setScreen(new HostingScreen(this.minecraft.screen));
             return true;
         }
         return false;
