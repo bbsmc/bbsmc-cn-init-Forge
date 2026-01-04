@@ -146,7 +146,7 @@ public class HostingPackage {
      */
     private static boolean loadFromStream(InputStream is) {
         try (InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-            JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
+            JsonObject root = new JsonParser().parse(reader).getAsJsonObject();
             JsonArray packagesArray = root.getAsJsonArray("packages");
 
             List<HostingPackage> packages = new ArrayList<>();

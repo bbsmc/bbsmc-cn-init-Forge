@@ -1,18 +1,21 @@
 package moe.ytonidc.ytongame_hostingmenu.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import moe.ytonidc.ytongame_hostingmenu.Config;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.net.URI;
 
 public class HostingScreen extends Screen {
-    private static final Component TITLE = Component.literal("联机开服");
-    private static final Component SUBSCRIBE_TEXT = Component.literal("订阅服务器");
+    private static final ITextComponent TITLE = new StringTextComponent("联机开服");
+    private static final ITextComponent SUBSCRIBE_TEXT = new StringTextComponent("订阅服务器");
 
     private final Screen lastScreen;
     private HostingPackageList packageList;
@@ -50,7 +53,7 @@ public class HostingScreen extends Screen {
             SUBSCRIBE_TEXT,
             button -> openPurchaseLink());
 
-        this.addRenderableWidget(subscribeButton);
+        this.addButton(subscribeButton);
     }
 
     private void openPurchaseLink() {
@@ -62,24 +65,24 @@ public class HostingScreen extends Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(poseStack);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(matrixStack);
 
         if (packageList != null) {
-            packageList.render(poseStack, mouseX, mouseY, partialTick);
+            packageList.render(matrixStack, mouseX, mouseY, partialTick);
         }
 
         // 绘制底部背景遮挡，确保文字区域在最上层
         int footerTop = this.height - 32;
-        fill(poseStack, 0, footerTop, this.width, this.height, 0xC0101010);
+        fill(matrixStack, 0, footerTop, this.width, this.height, 0xC0101010);
 
-        super.render(poseStack, mouseX, mouseY, partialTick);
+        super.render(matrixStack, mouseX, mouseY, partialTick);
 
         // 绘制标题
-        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 16, 0xFFFFFF);
+        drawCenteredString(matrixStack, this.font, this.title, this.width / 2, 16, 0xFFFFFF);
 
         // 绘制底部文字
-        var font = Minecraft.getInstance().font;
+        FontRenderer font = Minecraft.getInstance().font;
         String footerText = "* 致力为您提供稳定、流畅、24小时不断联的服务器，打造更优、更稳、更好的游戏体验！无人值守也可玩！";
         int footerY = this.height - 20;
 
@@ -96,7 +99,7 @@ public class HostingScreen extends Screen {
             float progress = (float) i / (textLength - 1);
             int color = getGradientColor(progress);
 
-            font.draw(poseStack, ch, charX, footerY, color);
+            font.draw(matrixStack, ch, charX, footerY, color);
             charX += font.width(ch);
         }
     }

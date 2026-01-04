@@ -1,13 +1,11 @@
 package moe.ytonidc.ytongame_hostingmenu.client;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import moe.ytonidc.ytongame_hostingmenu.Ytongame_hostingmenu;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.screens.multiplayer.ServerSelectionList;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.screen.ServerSelectionList;
 
 public class MultiPlayerAdEntry extends ServerSelectionList.Entry {
     private final Minecraft minecraft;
@@ -17,16 +15,11 @@ public class MultiPlayerAdEntry extends ServerSelectionList.Entry {
     }
 
     @Override
-    public @NotNull Component getNarration() {
-        return Component.literal("YtonGame AdEntry");
-    }
-
-    @Override
-    public void render(PoseStack poseStack, int itemId, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isMouseOver, float partialTicks) {
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.setShaderTexture(0, Ytongame_hostingmenu.hostingLogo);
-        GuiComponent.blit(poseStack, left, top, 0, 0.0f, 0.0f, entryHeight, entryHeight, entryHeight, entryHeight);
-        this.minecraft.font.draw(poseStack, "如果您需要24H不间断的服务器? 点击我跳转详情!", left + 32 + 3, top + 1, 16777215);
+    public void render(MatrixStack matrixStack, int itemId, int top, int left, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isMouseOver, float partialTicks) {
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        this.minecraft.getTextureManager().bind(Ytongame_hostingmenu.hostingLogo);
+        AbstractGui.blit(matrixStack, left, top, 0, 0.0f, 0.0f, entryHeight, entryHeight, entryHeight, entryHeight);
+        this.minecraft.font.draw(matrixStack, "如果您需要24H不间断的服务器? 点击我跳转详情!", left + 32 + 3, top + 1, 16777215);
 
         // 渐变色渲染描述文字（两行）
         String line1 = "推荐选用昱通游戏，我们收录且支持数百种整合包一键联机（仍在更新）";
@@ -34,12 +27,12 @@ public class MultiPlayerAdEntry extends ServerSelectionList.Entry {
         int textStartX = left + 32 + 3;
 
         // 渲染第一行（绿色渐变）
-        renderGradientText(poseStack, line1, textStartX, top + 12, true);
+        renderGradientText(matrixStack, line1, textStartX, top + 12, true);
         // 渲染第二行（黄橙渐变）
-        renderGradientText(poseStack, line2, textStartX, top + 12 + 9, false);
+        renderGradientText(matrixStack, line2, textStartX, top + 12 + 9, false);
     }
 
-    private void renderGradientText(PoseStack poseStack, String text, int startX, int y, boolean useGreen) {
+    private void renderGradientText(MatrixStack matrixStack, String text, int startX, int y, boolean useGreen) {
         int charX = startX;
         int textLength = text.length();
 
@@ -48,7 +41,7 @@ public class MultiPlayerAdEntry extends ServerSelectionList.Entry {
             float progress = (float) i / (textLength - 1);
             int color = useGreen ? getGreenGradientColor(progress) : getYellowOrangeGradientColor(progress);
 
-            this.minecraft.font.draw(poseStack, ch, charX, y, color);
+            this.minecraft.font.draw(matrixStack, ch, charX, y, color);
             charX += this.minecraft.font.width(ch);
         }
     }

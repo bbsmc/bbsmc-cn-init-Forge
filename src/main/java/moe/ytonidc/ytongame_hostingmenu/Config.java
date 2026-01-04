@@ -3,7 +3,7 @@ package moe.ytonidc.ytongame_hostingmenu;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.fml.config.ModConfig;
 
 @Mod.EventBusSubscriber(modid = Ytongame_hostingmenu.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Config {
@@ -40,7 +40,14 @@ public class Config {
     }
 
     @SubscribeEvent
-    static void onLoad(final ModConfigEvent event) {
+    static void onLoad(final ModConfig.Loading event) {
+        purchaseUrl = PURCHASE_URL.get();
+        enableAds = ENABLE_ADS.get();
+        chineseOnly = CHINESE_ONLY.get();
+    }
+
+    @SubscribeEvent
+    static void onReload(final ModConfig.Reloading event) {
         purchaseUrl = PURCHASE_URL.get();
         enableAds = ENABLE_ADS.get();
         chineseOnly = CHINESE_ONLY.get();

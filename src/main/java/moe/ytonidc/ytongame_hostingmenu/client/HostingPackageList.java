@@ -1,12 +1,14 @@
 package moe.ytonidc.ytongame_hostingmenu.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.widget.list.ExtendedList;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
-public class HostingPackageList extends ObjectSelectionList<HostingPackageList.Entry> {
+public class HostingPackageList extends ExtendedList<HostingPackageList.Entry> {
 
     public HostingPackageList(Minecraft minecraft, int width, int height, int y0, int y1, int itemHeight) {
         super(minecraft, width, height, y0, y1, itemHeight);
@@ -26,7 +28,7 @@ public class HostingPackageList extends ObjectSelectionList<HostingPackageList.E
         return this.width - 6;
     }
 
-    public class Entry extends ObjectSelectionList.Entry<Entry> {
+    public class Entry extends ExtendedList.AbstractListEntry<Entry> {
         private final HostingPackage pkg;
 
         public Entry(HostingPackage pkg) {
@@ -34,23 +36,23 @@ public class HostingPackageList extends ObjectSelectionList<HostingPackageList.E
         }
 
         @Override
-        public void render(PoseStack poseStack, int index, int top, int left, int width, int height,
+        public void render(MatrixStack matrixStack, int index, int top, int left, int width, int height,
                           int mouseX, int mouseY, boolean hovering, float partialTick) {
-            var font = minecraft.font;
+            FontRenderer font = minecraft.font;
 
             if (hovering) {
-                GuiComponent.fill(poseStack, left - 2, top - 2, left + width + 2, top + height + 2, 0x80808080);
+                AbstractGui.fill(matrixStack, left - 2, top - 2, left + width + 2, top + height + 2, 0x80808080);
             }
 
             int borderColor = pkg.getColor();
-            GuiComponent.fill(poseStack, left, top, left + 4, top + height, borderColor);
+            AbstractGui.fill(matrixStack, left, top, left + 4, top + height, borderColor);
 
             int textLeft = left + 12;
             int line1Y = top + 4;
             int line2Y = top + 18;
             int line3Y = top + 32;
 
-            font.draw(poseStack, pkg.getName(), textLeft, line1Y, pkg.getColor());
+            font.draw(matrixStack, pkg.getName(), textLeft, line1Y, pkg.getColor());
 
             // 渲染标签（从 JSON 获取）
             String tag = pkg.getTag();
@@ -62,35 +64,34 @@ public class HostingPackageList extends ObjectSelectionList<HostingPackageList.E
                 int tagHeight = 10;
                 // 使用套餐颜色作为标签背景，或使用红色作为默认
                 int tagBgColor = tag.equals("热销") ? 0xFFFF5555 : pkg.getColor();
-                GuiComponent.fill(poseStack, tagX, tagY - 1, tagX + tagWidth, tagY + tagHeight, tagBgColor);
-                font.draw(poseStack, tag, tagX + 3, tagY, 0xFFFFFFFF);
+                AbstractGui.fill(matrixStack, tagX, tagY - 1, tagX + tagWidth, tagY + tagHeight, tagBgColor);
+                font.draw(matrixStack, tag, tagX + 3, tagY, 0xFFFFFFFF);
             }
 
             String priceText = "¥" + pkg.getPrice() + "/月";
             int priceWidth = font.width(priceText);
-            font.draw(poseStack, priceText, left + width - priceWidth - 10, line1Y, 0xFFFFFF55);
+            font.draw(matrixStack, priceText, left + width - priceWidth - 10, line1Y, 0xFFFFFF55);
 
             String cpuLabel = "CPU: ";
-            font.draw(poseStack, cpuLabel, textLeft, line2Y, 0xFFAAAAAA);  // 灰色
+            font.draw(matrixStack, cpuLabel, textLeft, line2Y, 0xFFAAAAAA);  // 灰色
             int cpuLabelWidth = font.width(cpuLabel);
-            font.draw(poseStack, pkg.getProcessor(), textLeft + cpuLabelWidth, line2Y, 0xFFFFAA00);  // 金色
+            font.draw(matrixStack, pkg.getProcessor(), textLeft + cpuLabelWidth, line2Y, 0xFFFFAA00);  // 金色
 
             String memoryText = "内存: " + pkg.getMemory();
-            font.draw(poseStack, memoryText, textLeft, line3Y, 0xFFAAAAAA);
+            font.draw(matrixStack, memoryText, textLeft, line3Y, 0xFFAAAAAA);
 
             String backupText = "备份: " + pkg.getDefaultBackupSlots() + "/" + pkg.getMaxBackupSlots();
-            font.draw(poseStack, backupText, textLeft + 80, line3Y, 0xFFAAAAAA);
+            font.draw(matrixStack, backupText, textLeft + 80, line3Y, 0xFFAAAAAA);
 
             String storageText = "存储: " + pkg.getStorage();
-            font.draw(poseStack, storageText, textLeft + 160, line3Y, 0xFFAAAAAA);
+            font.draw(matrixStack, storageText, textLeft + 160, line3Y, 0xFFAAAAAA);
 
             String playersText = "推荐: " + pkg.getRecommendedPlayers();
-            font.draw(poseStack, playersText, textLeft + 250, line3Y, 0xFFAAAAAA);
+            font.draw(matrixStack, playersText, textLeft + 250, line3Y, 0xFFAAAAAA);
         }
 
-        @Override
-        public Component getNarration() {
-            return Component.literal(pkg.getName() + " - ¥" + pkg.getPrice() + "/月");
+        public ITextComponent getNarration() {
+            return new StringTextComponent(pkg.getName() + " - ¥" + pkg.getPrice() + "/月");
         }
 
         public HostingPackage getPackage() {
