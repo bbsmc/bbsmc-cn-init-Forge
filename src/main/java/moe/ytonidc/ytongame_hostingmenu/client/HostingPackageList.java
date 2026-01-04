@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class HostingPackageList extends ObjectSelectionList<HostingPackageList.Entry> {
 
@@ -90,7 +91,7 @@ public class HostingPackageList extends ObjectSelectionList<HostingPackageList.E
 
         @Override
         public Component getNarration() {
-            return Component.literal(pkg.getName() + " - ¥" + pkg.getPrice() + "/月");
+            return new TextComponent(pkg.getName() + " - ¥" + pkg.getPrice() + "/月");
         }
 
         public HostingPackage getPackage() {

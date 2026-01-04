@@ -7,12 +7,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.net.URI;
 
 public class HostingScreen extends Screen {
-    private static final Component TITLE = Component.literal("联机开服");
-    private static final Component SUBSCRIBE_TEXT = Component.literal("订阅服务器");
+    private static final Component TITLE = new TextComponent("联机开服");
+    private static final Component SUBSCRIBE_TEXT = new TextComponent("订阅服务器");
 
     private final Screen lastScreen;
     private HostingPackageList packageList;

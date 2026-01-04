@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.multiplayer.ServerSelectionList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 
 public class MultiPlayerAdEntry extends ServerSelectionList.Entry {
@@ -18,7 +19,7 @@ public class MultiPlayerAdEntry extends ServerSelectionList.Entry {
 
     @Override
     public @NotNull Component getNarration() {
-        return Component.literal("YtonGame AdEntry");
+        return new TextComponent("YtonGame AdEntry");
     }
 
     @Override

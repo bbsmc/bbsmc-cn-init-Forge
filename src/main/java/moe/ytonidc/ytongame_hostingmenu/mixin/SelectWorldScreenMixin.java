@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,7 +37,7 @@ public abstract class SelectWorldScreenMixin extends Screen {
             int buttonHeight = searchBox.getHeight();
 
             Button hostingButton = new Button(buttonX, buttonY, buttonWidth, buttonHeight,
-                Component.literal("联机开服"),
+                new TextComponent("联机开服"),
                 button -> this.minecraft.setScreen(new HostingScreen(this)));
 
             this.addRenderableWidget(hostingButton);

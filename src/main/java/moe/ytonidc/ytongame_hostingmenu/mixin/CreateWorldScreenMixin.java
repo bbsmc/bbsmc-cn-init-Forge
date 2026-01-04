@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,7 +37,7 @@ public abstract class CreateWorldScreenMixin extends Screen {
         int buttonY = 8;  // 标题位置
 
         ytongame$hostingButton = new Button(buttonX, buttonY, buttonWidth, buttonHeight,
-            Component.literal("联机开服"),
+            new TextComponent("联机开服"),
             button -> this.minecraft.setScreen(new HostingScreen(this)));
 
         this.addRenderableWidget(ytongame$hostingButton);
