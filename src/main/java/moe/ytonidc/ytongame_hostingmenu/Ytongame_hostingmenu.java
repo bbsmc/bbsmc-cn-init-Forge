@@ -1,23 +1,114 @@
 package moe.ytonidc.ytongame_hostingmenu;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import moe.ytonidc.ytongame_hostingmenu.client.HostingPackage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourcePackInfo;
+import net.minecraft.resources.ResourcePackList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 @Mod(Ytongame_hostingmenu.MODID)
+@Mod.EventBusSubscriber(modid = Ytongame_hostingmenu.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Ytongame_hostingmenu {
     public static final String MODID = "ytongame_hostingmenu";
     public static final ResourceLocation hostingLogo = new ResourceLocation(MODID, "textures/gui/logo_ytongame.png");
     public static final Logger LOGGER = LogManager.getLogger();
+    public static final Gson GSON = new Gson();
 
     public Ytongame_hostingmenu() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
 
         // 异步加载套餐数据（优先远程，失败则本地）
         HostingPackage.loadAsync();
+    }
+
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            Minecraft mc = Minecraft.getInstance();
+            ResourcePackList rpList = mc.getResourcePackRepository();
+
+            File configFile = new File(mc.gameDirectory, "config/modpack_info.json");
+            if (!configFile.exists()) {
+                LOGGER.debug("modpack_info.json not found, skipping auto resource pack loading");
+                return;
+            }
+
+            List<String> languagePacks = new ArrayList<>();
+            try (FileReader reader = new FileReader(configFile)) {
+                JsonObject json = GSON.fromJson(reader, JsonObject.class);
+                
+                JsonObject resourcePackInstall = json.getAsJsonObject("resource_pack_install");
+                if (resourcePackInstall != null && resourcePackInstall.has("auto_install_enabled")) {
+                    boolean autoInstallEnabled = resourcePackInstall.get("auto_install_enabled").getAsBoolean();
+                    if (autoInstallEnabled) {
+                        LOGGER.debug("Auto install already enabled by other means, skipping");
+                        return;
+                    }
+                }
+                
+                JsonArray packsArray = json.getAsJsonArray("language_packs");
+                if (packsArray != null) {
+                    for (int i = 0; i < packsArray.size(); i++) {
+                        languagePacks.add(packsArray.get(i).getAsString());
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("Failed to read modpack_info.json", e);
+                return;
+            }
+
+            if (languagePacks.isEmpty()) {
+                return;
+            }
+
+            File resourcePacksDir = new File(mc.gameDirectory, "resourcepacks");
+            List<String> packsToEnable = new ArrayList<>();
+            for (String packName : languagePacks) {
+                File packFile = new File(resourcePacksDir, packName);
+                if (packFile.exists()) {
+                    packsToEnable.add("file/" + packName);
+                } else {
+                    LOGGER.warn("Resource pack not found: {}", packName);
+                }
+            }
+
+            if (packsToEnable.isEmpty()) {
+                return;
+            }
+
+            rpList.reload();
+
+            Collection<String> selected = new ArrayList<>(rpList.getSelectedIds());
+            boolean changed = false;
+            for (String packId : packsToEnable) {
+                ResourcePackInfo packInfo = rpList.getPack(packId);
+                if (packInfo != null && !selected.contains(packId)) {
+                    selected.add(packId);
+                    changed = true;
+                    LOGGER.info("Auto-enabled resource pack: {}", packId);
+                }
+            }
+
+            if (changed) {
+                rpList.setSelected(selected);
+                mc.reloadResourcePacks();
+            }
+        });
     }
 }
