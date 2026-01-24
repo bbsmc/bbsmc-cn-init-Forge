@@ -9,6 +9,17 @@ import net.minecraft.client.Minecraft;
  */
 public class RegionDetector {
 
+    // 缓存的语言代码，用于在语言切换后保持同步
+    private static String cachedLanguage = null;
+
+    /**
+     * 刷新缓存的语言代码
+     * 应在语言切换后调用此方法
+     */
+    public static void refreshLanguage(String newLanguage) {
+        cachedLanguage = newLanguage;
+    }
+
     /**
      * 判断是否应该显示广告
      * 需要满足：配置启用广告，且（不限制语言 或 语言为简体中文）
@@ -24,7 +35,12 @@ public class RegionDetector {
             return true;
         }
 
-        // 每次都实时检测当前语言设置
+        // 优先使用缓存的语言代码
+        if (cachedLanguage != null) {
+            return "zh_cn".equalsIgnoreCase(cachedLanguage);
+        }
+
+        // 实时检测当前语言设置
         try {
             String mcLanguage = Minecraft.getInstance().options.languageCode;
             return "zh_cn".equalsIgnoreCase(mcLanguage);
