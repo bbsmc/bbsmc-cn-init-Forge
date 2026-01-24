@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import moe.ytonidc.ytongame_hostingmenu.client.HostingPackage;
+import moe.ytonidc.ytongame_hostingmenu.client.RegionDetector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
@@ -59,6 +60,7 @@ public class Ytongame_hostingmenu {
                     .filter(lang -> "zh_cn".equals(lang.getCode()))
                     .findFirst()
                     .ifPresent(mc.getLanguageManager()::setSelected);
+                RegionDetector.refreshLanguage("zh_cn");
                 mc.reloadResourcePacks();
             }
 
