@@ -54,13 +54,17 @@ public class Ytongame_hostingmenu {
 
             // 检查并设置语言为简体中文
             String currentLang = mc.getLanguageManager().getSelected().getCode();
-            if (!"zh_cn".equals(currentLang)) {
+            String targetLang = "zh_cn";
+            if (!targetLang.equals(currentLang)) {
                 LOGGER.info("Current language is '{}', switching to zh_cn", currentLang);
                 mc.getLanguageManager().getLanguages().stream()
-                    .filter(lang -> "zh_cn".equals(lang.getCode()))
+                    .filter(lang -> targetLang.equals(lang.getCode()))
                     .findFirst()
                     .ifPresent(mc.getLanguageManager()::setSelected);
-                RegionDetector.refreshLanguage("zh_cn");
+                mc.options.languageCode = targetLang;
+                mc.options.save();
+                LOGGER.info("Saving language '{}' to options", targetLang);
+                RegionDetector.refreshLanguage(targetLang);
                 mc.reloadResourcePacks();
             }
 
