@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "ytongame_hostingmenu",
+    "name": "YtonGame-HostingMenu",
+    "description": "YtonGame Hosting Menu for Minecraft",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["ytonidc"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

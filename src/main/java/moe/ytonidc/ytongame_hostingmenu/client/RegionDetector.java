@@ -42,7 +42,7 @@ public class RegionDetector {
 
         // 实时检测当前语言设置
         try {
-            String mcLanguage = Minecraft.getInstance().options.languageCode;
+            String mcLanguage = Minecraft.getMinecraft().gameSettings.language;
             return "zh_cn".equalsIgnoreCase(mcLanguage);
         } catch (Exception e) {
             // Minecraft 实例可能尚未初始化，使用系统语言作为备选
