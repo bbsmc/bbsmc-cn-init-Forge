@@ -4,13 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import moe.ytonidc.ytongame_hostingmenu.client.HostingPackage;
+import moe.ytonidc.ytongame_hostingmenu.client.RegionDetector;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,6 +33,8 @@ public class Ytongame_hostingmenu {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final Gson GSON = new Gson();
 
+    private static boolean languageSetupDone = false;
+
     @Mod.Instance(MODID)
     public static Ytongame_hostingmenu instance;
 
@@ -50,22 +54,6 @@ public class Ytongame_hostingmenu {
         if (!configFile.exists()) {
             LOGGER.debug("modpack_info.json not found, skipping auto setup");
             return;
-        }
-
-        // 检查并设置语言为简体中文
-        String currentLang = mc.getLanguageManager().getCurrentLanguage().getLanguageCode();
-        String targetLang = "zh_cn";
-        if (!targetLang.equals(currentLang)) {
-            LOGGER.info("Current language is '{}', switching to zh_cn", currentLang);
-            mc.getLanguageManager().getLanguages().stream()
-                .filter(lang -> targetLang.equals(lang.getLanguageCode()))
-                .findFirst()
-                .ifPresent(lang -> {
-                    mc.getLanguageManager().setCurrentLanguage(lang);
-                    mc.gameSettings.language = targetLang;
-                    mc.gameSettings.saveOptions();
-                    LOGGER.info("Saving language '{}' to options", targetLang);
-                });
         }
 
         List<String> languagePacks = new ArrayList<>();
@@ -109,6 +97,45 @@ public class Ytongame_hostingmenu {
 
         if (!packsToEnable.isEmpty()) {
             LOGGER.info("Found {} resource packs to potentially enable", packsToEnable.size());
+        }
+    }
+
+    // 在游戏完全加载后设置语言
+    @SubscribeEvent
+    public void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END || languageSetupDone) {
+            return;
+        }
+
+        Minecraft mc = Minecraft.getMinecraft();
+        // 等待游戏完全加载（主菜单出现）
+        if (mc.currentScreen == null && mc.world == null) {
+            return;
+        }
+
+        languageSetupDone = true;
+
+        File configFile = new File(mc.mcDataDir, "config/modpack_info.json");
+        if (!configFile.exists()) {
+            return;
+        }
+
+        // 检查并设置语言为简体中文
+        String currentLang = mc.getLanguageManager().getCurrentLanguage().getLanguageCode();
+        String targetLang = "zh_cn";
+        if (!targetLang.equals(currentLang)) {
+            LOGGER.info("Current language is '{}', switching to zh_cn", currentLang);
+            mc.getLanguageManager().getLanguages().stream()
+                .filter(lang -> targetLang.equals(lang.getLanguageCode()))
+                .findFirst()
+                .ifPresent(lang -> {
+                    mc.getLanguageManager().setCurrentLanguage(lang);
+                    mc.gameSettings.language = targetLang;
+                    mc.gameSettings.saveOptions();
+                    LOGGER.info("Language set to '{}', refreshing resources", targetLang);
+                    RegionDetector.refreshLanguage(targetLang);
+                    mc.refreshResources();
+                });
         }
     }
 }
