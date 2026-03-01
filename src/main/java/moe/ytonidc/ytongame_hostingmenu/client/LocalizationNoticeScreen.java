@@ -3,6 +3,7 @@ package moe.ytonidc.ytongame_hostingmenu.client;
 import com.google.gson.JsonObject;
 import moe.ytonidc.ytongame_hostingmenu.Ytongame_hostingmenu;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 
@@ -87,11 +88,9 @@ public class LocalizationNoticeScreen extends GuiScreen {
             Ytongame_hostingmenu.LOGGER.error("Failed to write modpack_info.json", e);
         }
 
-        // 执行语言和资源包设置
+        Ytongame_hostingmenu.markAgreed();
         Ytongame_hostingmenu.setupLanguageAndPacks(this.mc, languagePacks);
-
-        // 回到主菜单
-        this.mc.displayGuiScreen(null);
+        this.mc.displayGuiScreen(new GuiMainMenu());
     }
 
     private void onDecline() {
