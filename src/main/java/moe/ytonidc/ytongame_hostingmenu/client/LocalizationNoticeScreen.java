@@ -3,6 +3,7 @@ package moe.ytonidc.ytongame_hostingmenu.client;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import moe.ytonidc.ytongame_hostingmenu.Ytongame_hostingmenu;
+import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
@@ -83,8 +84,9 @@ public class LocalizationNoticeScreen extends Screen {
             Ytongame_hostingmenu.LOGGER.error("Failed to write modpack_info.json", e);
         }
 
+        Ytongame_hostingmenu.markAgreed();
         Ytongame_hostingmenu.setupLanguageAndPacks(this.minecraft, languagePacks);
-        this.minecraft.setScreen(null);
+        this.minecraft.setScreen(new MainMenuScreen());
     }
 
     private void onDecline() {
