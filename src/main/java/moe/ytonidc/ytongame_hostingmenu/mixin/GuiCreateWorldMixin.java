@@ -30,7 +30,7 @@ public abstract class GuiCreateWorldMixin extends GuiScreen {
         int buttonX = this.width / 2 + 80;
         int buttonY = 8;
 
-        ytongame$hostingButton = new GuiButton(999, buttonX, buttonY, buttonWidth, buttonHeight, "联机开服");
+        ytongame$hostingButton = new GuiButton(999, buttonX, buttonY, buttonWidth, buttonHeight, "联机开服(广告)");
         this.buttonList.add(ytongame$hostingButton);
     }
 

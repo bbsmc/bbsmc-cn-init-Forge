@@ -31,7 +31,7 @@ public abstract class GuiWorldSelectionMixin extends GuiScreen {
         int buttonX = this.width / 2 + 80;
         int buttonY = 6;
 
-        ytongame$hostingButton = new GuiButton(998, buttonX, buttonY, buttonWidth, buttonHeight, "联机开服");
+        ytongame$hostingButton = new GuiButton(998, buttonX, buttonY, buttonWidth, buttonHeight, "联机开服(广告)");
         this.buttonList.add(ytongame$hostingButton);
     }
 
