@@ -37,7 +37,7 @@ public abstract class SelectWorldScreenMixin extends Screen {
             int buttonHeight = searchBox.getHeight();
 
             Button hostingButton = new Button(buttonX, buttonY, buttonWidth, buttonHeight,
-                new StringTextComponent("联机开服"),
+                new StringTextComponent("联机开服(广告)"),
                 button -> this.minecraft.setScreen(new HostingScreen(this)));
 
             this.addButton(hostingButton);

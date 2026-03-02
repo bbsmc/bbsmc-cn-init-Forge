@@ -14,7 +14,7 @@ import net.minecraft.util.text.StringTextComponent;
 import java.net.URI;
 
 public class HostingScreen extends Screen {
-    private static final ITextComponent TITLE = new StringTextComponent("联机开服");
+    private static final ITextComponent TITLE = new StringTextComponent("联机开服(广告)");
     private static final ITextComponent SUBSCRIBE_TEXT = new StringTextComponent("订阅服务器");
 
     private final Screen lastScreen;
