@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import java.util.function.Consumer;
 
 public class HostingTab implements Tab {
-    private static final Component TITLE = Component.literal("联机开服");
+    private static final Component TITLE = Component.literal("联机开服(广告)");
 
     // 用于从选择世界页面跳转时自动切换到 Hosting 标签
     public static boolean shouldOpenHostingTab = false;
