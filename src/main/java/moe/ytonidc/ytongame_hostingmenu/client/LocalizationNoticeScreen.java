@@ -55,14 +55,14 @@ public class LocalizationNoticeScreen extends GuiScreen {
         this.buttonList.add(new GuiButton(0, startX, buttonY, buttonWidth, buttonHeight, AGREE_TEXT));
         this.buttonList.add(new GuiButton(1, startX + buttonWidth + gap, buttonY, buttonWidth, buttonHeight, DECLINE_TEXT));
 
-        // 预计算自动换行
+        // 预计算自动换行（手动实现，避免 ProjectE ManualFontRenderer 无限递归 bug）
         wrappedLines.clear();
         int maxWidth = this.width - 60;
         for (String line : NOTICE_LINES) {
             if (line.isEmpty()) {
                 wrappedLines.add("");
             } else {
-                wrappedLines.addAll(this.fontRenderer.listFormattedStringToWidth(line, maxWidth));
+                wrapLine(line, maxWidth);
             }
         }
     }
@@ -94,6 +94,36 @@ public class LocalizationNoticeScreen extends GuiScreen {
     private void onDecline() {
         Ytongame_hostingmenu.LOGGER.info("User declined localization notice, shutting down");
         this.mc.shutdown();
+    }
+
+    private void wrapLine(String text, int maxWidth) {
+        StringBuilder current = new StringBuilder();
+        StringBuilder formatting = new StringBuilder();
+        int i = 0;
+        while (i < text.length()) {
+            if (text.charAt(i) == '\u00a7' && i + 1 < text.length()) {
+                char code = text.charAt(i + 1);
+                if (code == 'r' || code == 'R') {
+                    formatting.setLength(0);
+                } else {
+                    formatting.append('\u00a7').append(code);
+                }
+                current.append('\u00a7').append(code);
+                i += 2;
+            } else {
+                current.append(text.charAt(i));
+                if (this.fontRenderer.getStringWidth(current.toString()) > maxWidth) {
+                    current.deleteCharAt(current.length() - 1);
+                    wrappedLines.add(current.toString());
+                    current = new StringBuilder(formatting.toString());
+                    current.append(text.charAt(i));
+                }
+                i++;
+            }
+        }
+        if (current.length() > 0) {
+            wrappedLines.add(current.toString());
+        }
     }
 
     @Override
