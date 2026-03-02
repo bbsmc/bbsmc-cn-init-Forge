@@ -29,14 +29,14 @@ public abstract class CreateWorldScreenMixin extends Screen {
             return;
         }
 
-        // 在标题右侧添加"联机开服"按钮
+        // 在标题右侧添加"联机开服(广告)"按钮
         int buttonWidth = 60;
         int buttonHeight = 20;
         int buttonX = this.width / 2 + 80;  // 标题右侧
         int buttonY = 8;  // 标题位置
 
         ytongame$hostingButton = new Button(buttonX, buttonY, buttonWidth, buttonHeight,
-            Component.literal("联机开服"),
+            Component.literal("联机开服(广告)"),
             button -> this.minecraft.setScreen(new HostingScreen(this)));
 
         this.addRenderableWidget(ytongame$hostingButton);

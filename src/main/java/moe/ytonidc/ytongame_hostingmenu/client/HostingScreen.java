@@ -11,7 +11,7 @@ import net.minecraft.network.chat.Component;
 import java.net.URI;
 
 public class HostingScreen extends Screen {
-    private static final Component TITLE = Component.literal("联机开服");
+    private static final Component TITLE = Component.literal("联机开服(广告)");
     private static final Component SUBSCRIBE_TEXT = Component.literal("订阅服务器");
 
     private final Screen lastScreen;
