@@ -7,9 +7,6 @@
   "mixins": [
   ],
   "client": [
-    "CreateWorldScreenMixin",
-    "SelectWorldScreenMixin",
-    "ServerSelectionListMixin"
   ],
   "injectors": {
     "defaultRequire": 1
