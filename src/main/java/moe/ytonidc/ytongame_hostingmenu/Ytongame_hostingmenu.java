@@ -4,15 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import moe.ytonidc.ytongame_hostingmenu.client.HostingPackage;
 import moe.ytonidc.ytongame_hostingmenu.client.LocalizationNoticeScreen;
-import moe.ytonidc.ytongame_hostingmenu.client.RegionDetector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiWorldSelection;
 import net.minecraft.client.resources.ResourcePackRepository;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -25,7 +22,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -39,7 +35,6 @@ public class Ytongame_hostingmenu {
     public static final String NAME = "YtonGame-HostingMenu";
     public static final String VERSION = "1.0.9";
 
-    public static final ResourceLocation hostingLogo = new ResourceLocation(MODID, "textures/gui/logo_ytongame.png");
     public static final Logger LOGGER = LogManager.getLogger();
     public static final Gson GSON = new Gson();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
@@ -55,8 +50,6 @@ public class Ytongame_hostingmenu {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        // 异步加载套餐数据（优先远程，失败则本地）
-        HostingPackage.loadAsync();
     }
 
     @Mod.EventHandler
@@ -118,7 +111,6 @@ public class Ytongame_hostingmenu {
      * 设置语言为简体中文并启用指定资源包，供 onClientTick 和 LocalizationNoticeScreen 共用
      */
     public static void setupLanguageAndPacks(Minecraft mc, List<String> languagePacks) {
-        // 设置语言为简体中文
         String currentLang = mc.getLanguageManager().getCurrentLanguage().getLanguageCode();
         String targetLang = "zh_cn";
         boolean languageChanged = false;
@@ -132,12 +124,10 @@ public class Ytongame_hostingmenu {
                     mc.gameSettings.language = targetLang;
                     mc.gameSettings.saveOptions();
                     LOGGER.info("Language set to '{}'", targetLang);
-                    RegionDetector.refreshLanguage(targetLang);
                 });
             languageChanged = true;
         }
 
-        // 启用资源包
         boolean packsChanged = false;
         if (!languagePacks.isEmpty()) {
             File resourcePacksDir = new File(mc.mcDataDir, "resourcepacks");

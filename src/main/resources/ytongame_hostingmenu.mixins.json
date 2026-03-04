@@ -7,9 +7,6 @@
   "mixins": [
   ],
   "client": [
-    "GuiCreateWorldMixin",
-    "GuiWorldSelectionMixin",
-    "ServerSelectionListMixin"
   ],
   "injectors": {
     "defaultRequire": 1
