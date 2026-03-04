@@ -25,8 +25,7 @@ public class LocalizationNoticeScreen extends GuiScreen {
         "\u00a7f  反馈QQ群：\u00a7b\u00a7l1073724937\u00a7r\u00a7f  |  官方网站：\u00a7n\u00a7bhttps://bbsmc.net\u00a7r\u00a7f",
         ""
     };
-    private static final String AGREE_TEXT = "同意并继续";
-    private static final String DECLINE_TEXT = "拒绝并退出";
+    private static final String AGREE_TEXT = "继续";
 
     private final JsonObject modpackJson;
     private final List<String> languagePacks;
@@ -47,13 +46,11 @@ public class LocalizationNoticeScreen extends GuiScreen {
 
         int buttonWidth = 120;
         int buttonHeight = 20;
-        int gap = 10;
-        int totalWidth = buttonWidth * 2 + gap;
+        int totalWidth = buttonWidth;
         int startX = (this.width - totalWidth) / 2;
         int buttonY = this.height - 40;
 
         this.buttonList.add(new GuiButton(0, startX, buttonY, buttonWidth, buttonHeight, AGREE_TEXT));
-        this.buttonList.add(new GuiButton(1, startX + buttonWidth + gap, buttonY, buttonWidth, buttonHeight, DECLINE_TEXT));
 
         // 预计算自动换行（手动实现，避免 ProjectE ManualFontRenderer 无限递归 bug）
         wrappedLines.clear();
@@ -71,8 +68,6 @@ public class LocalizationNoticeScreen extends GuiScreen {
     protected void actionPerformed(GuiButton button) throws IOException {
         if (button.id == 0) {
             onAgree();
-        } else if (button.id == 1) {
-            onDecline();
         }
     }
 
@@ -89,11 +84,6 @@ public class LocalizationNoticeScreen extends GuiScreen {
         BbsmcCnInit.markAgreed();
         BbsmcCnInit.setupLanguageAndPacks(this.mc, languagePacks);
         this.mc.displayGuiScreen(new GuiMainMenu());
-    }
-
-    private void onDecline() {
-        BbsmcCnInit.LOGGER.info("User declined localization notice, shutting down");
-        this.mc.shutdown();
     }
 
     private void wrapLine(String text, int maxWidth) {
@@ -148,12 +138,4 @@ public class LocalizationNoticeScreen extends GuiScreen {
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        if (keyCode == 1) { // ESC
-            onDecline();
-            return;
-        }
-        // 不调用 super，阻止其他方式关闭界面
-    }
 }
