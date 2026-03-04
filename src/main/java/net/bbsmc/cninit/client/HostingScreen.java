@@ -1,7 +1,7 @@
-package moe.ytonidc.ytongame_hostingmenu.client;
+package net.bbsmc.cninit.client;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import moe.ytonidc.ytongame_hostingmenu.Config;
+import net.bbsmc.cninit.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
