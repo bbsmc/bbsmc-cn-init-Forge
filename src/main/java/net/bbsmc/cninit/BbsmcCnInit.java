@@ -144,9 +144,7 @@ public class BbsmcCnInit {
             if (mc.screen == null && mc.level == null) return;
             setupDone = true;
             loadConfig(mc);
-            if (userAgreement) {
-                setupLanguageAndPacks(mc, languagePacks);
-            }
+            setupLanguageAndPacks(mc, languagePacks);
         }
 
         @SubscribeEvent
