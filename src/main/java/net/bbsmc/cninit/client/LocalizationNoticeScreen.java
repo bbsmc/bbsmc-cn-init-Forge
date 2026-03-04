@@ -1,8 +1,8 @@
-package moe.ytonidc.ytongame_hostingmenu.client;
+package net.bbsmc.cninit.client;
 
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
-import moe.ytonidc.ytongame_hostingmenu.Ytongame_hostingmenu;
+import net.bbsmc.cninit.BbsmcCnInit;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -79,19 +79,19 @@ public class LocalizationNoticeScreen extends Screen {
     private void onAgree() {
         try {
             modpackJson.addProperty("user_agreement", true);
-            Ytongame_hostingmenu.writeJsonToFile(configFile, modpackJson);
-            Ytongame_hostingmenu.LOGGER.info("User agreed to localization notice, user_agreement set to true");
+            BbsmcCnInit.writeJsonToFile(configFile, modpackJson);
+            BbsmcCnInit.LOGGER.info("User agreed to localization notice, user_agreement set to true");
         } catch (Exception e) {
-            Ytongame_hostingmenu.LOGGER.error("Failed to write modpack_info.json", e);
+            BbsmcCnInit.LOGGER.error("Failed to write modpack_info.json", e);
         }
 
-        Ytongame_hostingmenu.markAgreed();
-        Ytongame_hostingmenu.setupLanguageAndPacks(this.minecraft, languagePacks);
+        BbsmcCnInit.markAgreed();
+        BbsmcCnInit.setupLanguageAndPacks(this.minecraft, languagePacks);
         this.minecraft.setScreen(new TitleScreen());
     }
 
     private void onDecline() {
-        Ytongame_hostingmenu.LOGGER.info("User declined localization notice, shutting down");
+        BbsmcCnInit.LOGGER.info("User declined localization notice, shutting down");
         this.minecraft.stop();
     }
 
