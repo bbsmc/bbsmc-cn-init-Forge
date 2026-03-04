@@ -27,8 +27,7 @@ public class LocalizationNoticeScreen extends Screen {
         "\u00a7f  反馈QQ群：\u00a7b\u00a7l1073724937\u00a7r\u00a7f  |  官方网站：\u00a7n\u00a7bhttps://bbsmc.net\u00a7r\u00a7f",
         ""
     };
-    private static final String AGREE_TEXT = "同意并继续";
-    private static final String DECLINE_TEXT = "拒绝并退出";
+    private static final String AGREE_TEXT = "继续";
 
     private final JsonObject modpackJson;
     private final List<String> languagePacks;
@@ -49,17 +48,13 @@ public class LocalizationNoticeScreen extends Screen {
 
         int buttonWidth = 120;
         int buttonHeight = 20;
-        int gap = 10;
-        int totalWidth = buttonWidth * 2 + gap;
+        int totalWidth = buttonWidth;
         int startX = (this.width - totalWidth) / 2;
         int buttonY = this.height - 40;
 
         this.addRenderableWidget(new Button(startX, buttonY, buttonWidth, buttonHeight,
                 Component.literal(AGREE_TEXT),
                 btn -> onAgree()));
-        this.addRenderableWidget(new Button(startX + buttonWidth + gap, buttonY, buttonWidth, buttonHeight,
-                Component.literal(DECLINE_TEXT),
-                btn -> onDecline()));
 
         // 预计算自动换行
         wrappedLines.clear();
@@ -87,11 +82,6 @@ public class LocalizationNoticeScreen extends Screen {
         this.minecraft.setScreen(new TitleScreen());
     }
 
-    private void onDecline() {
-        BbsmcCnInit.LOGGER.info("User declined localization notice, shutting down");
-        this.minecraft.stop();
-    }
-
     @Override
     public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(poseStack);
@@ -112,17 +102,4 @@ public class LocalizationNoticeScreen extends Screen {
         super.render(poseStack, mouseX, mouseY, partialTicks);
     }
 
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) { // ESC
-            onDecline();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean shouldCloseOnEsc() {
-        return false;
-    }
 }
