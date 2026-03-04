@@ -21,7 +21,7 @@ group = mod_group_id
 version = mod_version
 
 base {
-    archivesName = "YTGame-HostingMenu-${minecraft_version}-Forge"
+    archivesName = "bbsmc-cn-init-${minecraft_version}-Forge"
 }
 
 java {

@@ -1,9 +1,9 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "moe.ytonidc.ytongame_hostingmenu.mixin",
+  "package": "net.bbsmc.cninit.mixin",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "ytongame_hostingmenu.refmap.json",
+  "refmap": "bbsmc_cn_init.refmap.json",
   "mixins": [
   ],
   "client": [
