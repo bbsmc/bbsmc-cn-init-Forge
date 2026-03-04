@@ -4,17 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import moe.ytonidc.ytongame_hostingmenu.client.HostingPackage;
 import moe.ytonidc.ytongame_hostingmenu.client.LocalizationNoticeScreen;
-import moe.ytonidc.ytongame_hostingmenu.client.RegionDetector;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.client.gui.screen.MultiplayerScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.WorldSelectionScreen;
 import net.minecraft.resources.ResourcePackInfo;
 import net.minecraft.resources.ResourcePackList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
@@ -38,7 +34,6 @@ import java.util.List;
 @Mod(Ytongame_hostingmenu.MODID)
 public class Ytongame_hostingmenu {
     public static final String MODID = "ytongame_hostingmenu";
-    public static final ResourceLocation hostingLogo = new ResourceLocation(MODID, "textures/gui/logo_ytongame.png");
     public static final Logger LOGGER = LogManager.getLogger();
     public static final Gson GSON = new Gson();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
@@ -51,11 +46,6 @@ public class Ytongame_hostingmenu {
 
     public Ytongame_hostingmenu() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
-
-        // 异步加载套餐数据（优先远程，失败则本地）
-        HostingPackage.loadAsync();
-
-        // 注册Forge事件总线
         MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
     }
 
@@ -110,7 +100,6 @@ public class Ytongame_hostingmenu {
     }
 
     public static void setupLanguageAndPacks(Minecraft mc, List<String> languagePacks) {
-        // 设置语言为简体中文
         String currentLang = mc.getLanguageManager().getSelected().getCode();
         String targetLang = "zh_cn";
         boolean languageChanged = false;
@@ -124,12 +113,10 @@ public class Ytongame_hostingmenu {
                     mc.options.languageCode = targetLang;
                     mc.options.save();
                     LOGGER.info("Language set to '{}'", targetLang);
-                    RegionDetector.refreshLanguage(targetLang);
                 });
             languageChanged = true;
         }
 
-        // 启用资源包
         boolean packsChanged = false;
         if (!languagePacks.isEmpty()) {
             File resourcePacksDir = new File(mc.gameDirectory, "resourcepacks");
