@@ -82,7 +82,6 @@ public class LocalizationNoticeScreen extends GuiScreen {
         }
 
         BbsmcCnInit.markAgreed();
-        BbsmcCnInit.setupLanguageAndPacks(this.mc, languagePacks);
         this.mc.displayGuiScreen(new GuiMainMenu());
     }
 
