@@ -5,13 +5,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
-import moe.ytonidc.ytongame_hostingmenu.client.HostingPackage;
 import moe.ytonidc.ytongame_hostingmenu.client.LocalizationNoticeScreen;
-import moe.ytonidc.ytongame_hostingmenu.client.RegionDetector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -36,7 +33,6 @@ import java.util.List;
 @Mod(Ytongame_hostingmenu.MODID)
 public class Ytongame_hostingmenu {
     public static final String MODID = "ytongame_hostingmenu";
-    public static final ResourceLocation hostingLogo = new ResourceLocation(MODID, "textures/gui/logo_ytongame.png");
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final Gson GSON = new Gson();
     public static final Gson GSON_PRETTY = new GsonBuilder().setPrettyPrinting().create();
@@ -49,7 +45,6 @@ public class Ytongame_hostingmenu {
 
     public Ytongame_hostingmenu() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
-        HostingPackage.loadAsync();
         MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
     }
 
@@ -75,7 +70,6 @@ public class Ytongame_hostingmenu {
                     mc.options.languageCode = targetLang;
                     mc.options.save();
                     LOGGER.info("Language set to '{}'", targetLang);
-                    RegionDetector.refreshLanguage(targetLang);
                 });
             languageChanged = true;
         }
