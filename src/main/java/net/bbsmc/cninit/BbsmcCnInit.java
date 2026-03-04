@@ -182,7 +182,7 @@ public class BbsmcCnInit {
             setupDone = true;
             loadConfig();
 
-            if (userAgreement && configLoaded) {
+            if (configLoaded) {
                 setupLanguageAndPacks(mc, languagePacks);
             }
         }
