@@ -1,10 +1,10 @@
-package moe.ytonidc.ytongame_hostingmenu;
+package net.bbsmc.cninit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import moe.ytonidc.ytongame_hostingmenu.client.LocalizationNoticeScreen;
+import net.bbsmc.cninit.client.LocalizationNoticeScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiScreen;
@@ -29,10 +29,10 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod(modid = Ytongame_hostingmenu.MODID, name = Ytongame_hostingmenu.NAME, version = Ytongame_hostingmenu.VERSION, clientSideOnly = true)
-public class Ytongame_hostingmenu {
-    public static final String MODID = "ytongame_hostingmenu";
-    public static final String NAME = "YtonGame-HostingMenu";
+@Mod(modid = BbsmcCnInit.MODID, name = BbsmcCnInit.NAME, version = BbsmcCnInit.VERSION, clientSideOnly = true)
+public class BbsmcCnInit {
+    public static final String MODID = "bbsmc_cn_init";
+    public static final String NAME = "BBSMC-CN-Init";
     public static final String VERSION = "1.0.9";
 
     public static final Logger LOGGER = LogManager.getLogger();
@@ -46,7 +46,7 @@ public class Ytongame_hostingmenu {
     private static File configFile = null;
 
     @Mod.Instance(MODID)
-    public static Ytongame_hostingmenu instance;
+    public static BbsmcCnInit instance;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {

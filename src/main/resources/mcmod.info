@@ -1,13 +1,13 @@
 [
   {
-    "modid": "ytongame_hostingmenu",
-    "name": "YtonGame-HostingMenu",
-    "description": "YtonGame Hosting Menu for Minecraft",
+    "modid": "bbsmc_cn_init",
+    "name": "BBSMC-CN-Init",
+    "description": "BBSMC-CN-Init for Minecraft",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "",
     "updateUrl": "",
-    "authorList": ["ytonidc"],
+    "authorList": ["bbsmc"],
     "credits": "",
     "logoFile": "",
     "screenshots": [],

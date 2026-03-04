@@ -17,7 +17,7 @@ apply plugin: 'maven-publish'
 
 version = mod_version
 group = mod_group
-archivesBaseName = "YTGame-HostingMenu-1.12.2-Forge"
+archivesBaseName = "bbsmc-cn-init-1.12.2-Forge"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
@@ -31,7 +31,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
             
             mods {
-                ytongame_hostingmenu {
+                bbsmc_cn_init {
                     source sourceSets.main
                 }
             }
@@ -43,7 +43,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
             
             mods {
-                ytongame_hostingmenu {
+                bbsmc_cn_init {
                     source sourceSets.main
                 }
             }
@@ -72,11 +72,11 @@ jar {
     manifest {
         attributes([
             "Specification-Title": mod_id,
-            "Specification-Vendor": "ytonidc",
+            "Specification-Vendor": "bbsmc",
             "Specification-Version": "1",
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
-            "Implementation-Vendor": "ytonidc",
+            "Implementation-Vendor": "bbsmc",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "MixinConfigs": "${mod_id}.mixins.json",

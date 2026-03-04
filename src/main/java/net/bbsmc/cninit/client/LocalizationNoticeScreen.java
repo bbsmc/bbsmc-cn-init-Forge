@@ -1,7 +1,7 @@
-package moe.ytonidc.ytongame_hostingmenu.client;
+package net.bbsmc.cninit.client;
 
 import com.google.gson.JsonObject;
-import moe.ytonidc.ytongame_hostingmenu.Ytongame_hostingmenu;
+import net.bbsmc.cninit.BbsmcCnInit;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -83,19 +83,19 @@ public class LocalizationNoticeScreen extends GuiScreen {
         // 写回 JSON，设置 user_agreement = true
         try {
             modpackJson.addProperty("user_agreement", true);
-            Ytongame_hostingmenu.writeJsonToFile(configFile, modpackJson);
-            Ytongame_hostingmenu.LOGGER.info("User agreed to localization notice, user_agreement set to true");
+            BbsmcCnInit.writeJsonToFile(configFile, modpackJson);
+            BbsmcCnInit.LOGGER.info("User agreed to localization notice, user_agreement set to true");
         } catch (Exception e) {
-            Ytongame_hostingmenu.LOGGER.error("Failed to write modpack_info.json", e);
+            BbsmcCnInit.LOGGER.error("Failed to write modpack_info.json", e);
         }
 
-        Ytongame_hostingmenu.markAgreed();
-        Ytongame_hostingmenu.setupLanguageAndPacks(this.mc, languagePacks);
+        BbsmcCnInit.markAgreed();
+        BbsmcCnInit.setupLanguageAndPacks(this.mc, languagePacks);
         this.mc.displayGuiScreen(new GuiMainMenu());
     }
 
     private void onDecline() {
-        Ytongame_hostingmenu.LOGGER.info("User declined localization notice, shutting down");
+        BbsmcCnInit.LOGGER.info("User declined localization notice, shutting down");
         this.mc.shutdown();
     }
 
