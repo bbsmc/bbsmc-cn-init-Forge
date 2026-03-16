@@ -78,6 +78,7 @@ public class LocalizationNoticeScreen extends Screen {
         }
 
         BbsmcCnInit.markAgreed();
+        BbsmcCnInit.setupLanguageAndPacks(this.minecraft, languagePacks);
         this.minecraft.setScreen(new TitleScreen());
     }
 
