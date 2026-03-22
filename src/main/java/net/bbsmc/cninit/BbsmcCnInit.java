@@ -13,8 +13,8 @@ import net.minecraft.client.resources.ResourcePackRepository;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.logging.log4j.LogManager;
@@ -48,13 +48,72 @@ public class BbsmcCnInit {
     @Mod.Instance(MODID)
     public static BbsmcCnInit instance;
 
+    /**
+     * FMLConstructionEvent — 最早的阶段，在资源加载之前执行。
+     * 和 i18n 一样，直接设置 gameSettings.language 字段，
+     * MC 后续初始化时自然会用 zh_cn 加载资源，无需 refreshResources()。
+     */
     @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
+    public void onConstruction(FMLConstructionEvent event) {
+        loadConfig();
+        if (userAgreement) {
+            setupLangEarly();
+        }
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    /**
+     * 早期语言设置：在资源加载前直接修改字段，无需 refreshResources()。
+     * 参考 CFPAOrg/I18nUpdateMod 的实现方式。
+     */
+    private static void setupLangEarly() {
+        try {
+            Minecraft mc = Minecraft.getMinecraft();
+            if (mc.gameSettings != null && !"zh_cn".equals(mc.gameSettings.language)) {
+                // 通过反射设置 LanguageManager.currentLanguage (private 字段)
+                // SRG name: field_135048_o, MCP name: currentLanguage
+                try {
+                    java.lang.reflect.Field langField = null;
+                    for (java.lang.reflect.Field f : mc.getLanguageManager().getClass().getDeclaredFields()) {
+                        if (f.getType() == String.class) {
+                            f.setAccessible(true);
+                            String val = (String) f.get(mc.getLanguageManager());
+                            if (val != null && (val.equals("en_us") || val.equals("en_US") || val.length() == 5)) {
+                                langField = f;
+                                break;
+                            }
+                        }
+                    }
+                    if (langField != null) {
+                        langField.set(mc.getLanguageManager(), "zh_cn");
+                    }
+                } catch (Exception e) {
+                    LOGGER.debug("Reflection failed for LanguageManager, falling back to gameSettings only");
+                }
+                mc.gameSettings.language = "zh_cn";
+                LOGGER.info("Language pre-set to zh_cn (early stage)");
+            }
+
+            // 资源包也在早期添加到 gameSettings.resourcePacks 列表
+            if (!languagePacks.isEmpty() && mc.gameSettings != null) {
+                for (String packName : languagePacks) {
+                    String packId = "file/" + packName;
+                    if (!mc.gameSettings.resourcePacks.contains(packId)) {
+                        File rpFile = new File(mc.mcDataDir, "resourcepacks/" + packName);
+                        if (rpFile.exists()) {
+                            mc.gameSettings.resourcePacks.add(packId);
+                            LOGGER.info("Resource pack pre-added: {}", packId);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Failed to pre-set language: {}", e.getMessage());
+        }
     }
 
     public static void markAgreed() {
@@ -108,7 +167,7 @@ public class BbsmcCnInit {
     }
 
     /**
-     * 设置语言为简体中文并启用指定资源包，供 onClientTick 和 LocalizationNoticeScreen 共用
+     * 完整的语言和资源包设置（用于 LocalizationNoticeScreen 点击同意后）
      */
     public static void setupLanguageAndPacks(Minecraft mc, List<String> languagePacks) {
         String currentLang = mc.getLanguageManager().getCurrentLanguage().getLanguageCode();
@@ -201,10 +260,5 @@ public class BbsmcCnInit {
 
         setupDone = true;
         loadConfig();
-
-        // 自动设置中文语言和资源包
-        if (userAgreement) {
-            setupLanguageAndPacks(mc, languagePacks);
-        }
     }
 }
