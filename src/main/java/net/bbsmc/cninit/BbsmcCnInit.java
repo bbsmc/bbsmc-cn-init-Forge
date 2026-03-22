@@ -201,5 +201,10 @@ public class BbsmcCnInit {
 
         setupDone = true;
         loadConfig();
+
+        // 自动设置中文语言和资源包
+        if (userAgreement) {
+            setupLanguageAndPacks(mc, languagePacks);
+        }
     }
 }
