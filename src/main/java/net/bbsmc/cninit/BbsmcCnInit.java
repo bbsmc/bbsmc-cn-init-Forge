@@ -55,10 +55,9 @@ public class BbsmcCnInit {
      */
     @Mod.EventHandler
     public void onConstruction(FMLConstructionEvent event) {
-        loadConfig();
-        if (userAgreement) {
-            setupLangEarly();
-        }
+        // 无条件设置语言为中文（和 i18n 一样，在资源加载前执行）
+        setupLangEarly();
+        // config 加载延迟到 tick 阶段（此时 mc.mcDataDir 可能还未就绪）
     }
 
     @Mod.EventHandler
@@ -70,49 +69,16 @@ public class BbsmcCnInit {
      * 早期语言设置：在资源加载前直接修改字段，无需 refreshResources()。
      * 参考 CFPAOrg/I18nUpdateMod 的实现方式。
      */
+    /**
+     * 早期语言设置：在资源加载前直接修改 gameSettings.language。
+     * 参考 CFPAOrg/I18nUpdateMod 的实现，不检查 null、不 try-catch，
+     * 因为在 FMLConstructionEvent 阶段 Minecraft 实例和 gameSettings 已经初始化。
+     */
     private static void setupLangEarly() {
-        try {
-            Minecraft mc = Minecraft.getMinecraft();
-            if (mc.gameSettings != null && !"zh_cn".equals(mc.gameSettings.language)) {
-                // 通过反射设置 LanguageManager.currentLanguage (private 字段)
-                // SRG name: field_135048_o, MCP name: currentLanguage
-                try {
-                    java.lang.reflect.Field langField = null;
-                    for (java.lang.reflect.Field f : mc.getLanguageManager().getClass().getDeclaredFields()) {
-                        if (f.getType() == String.class) {
-                            f.setAccessible(true);
-                            String val = (String) f.get(mc.getLanguageManager());
-                            if (val != null && (val.equals("en_us") || val.equals("en_US") || val.length() == 5)) {
-                                langField = f;
-                                break;
-                            }
-                        }
-                    }
-                    if (langField != null) {
-                        langField.set(mc.getLanguageManager(), "zh_cn");
-                    }
-                } catch (Exception e) {
-                    LOGGER.debug("Reflection failed for LanguageManager, falling back to gameSettings only");
-                }
-                mc.gameSettings.language = "zh_cn";
-                LOGGER.info("Language pre-set to zh_cn (early stage)");
-            }
-
-            // 资源包也在早期添加到 gameSettings.resourcePacks 列表
-            if (!languagePacks.isEmpty() && mc.gameSettings != null) {
-                for (String packName : languagePacks) {
-                    String packId = "file/" + packName;
-                    if (!mc.gameSettings.resourcePacks.contains(packId)) {
-                        File rpFile = new File(mc.mcDataDir, "resourcepacks/" + packName);
-                        if (rpFile.exists()) {
-                            mc.gameSettings.resourcePacks.add(packId);
-                            LOGGER.info("Resource pack pre-added: {}", packId);
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.warn("Failed to pre-set language: {}", e.getMessage());
+        Minecraft mc = Minecraft.getMinecraft();
+        if (!"zh_cn".equals(mc.gameSettings.language)) {
+            mc.gameSettings.language = "zh_cn";
+            LOGGER.info("Language pre-set to zh_cn");
         }
     }
 
