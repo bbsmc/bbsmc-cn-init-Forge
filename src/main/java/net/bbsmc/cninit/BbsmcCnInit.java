@@ -88,12 +88,12 @@ public class BbsmcCnInit {
                     if (packsArray != null) {
                         for (int i = 0; i < packsArray.size(); i++) {
                             String packName = packsArray.get(i).getAsString();
-                            String packId = "file/" + packName;
-                            if (!mc.gameSettings.resourcePacks.contains(packId)) {
+                            // 1.12.2 的 resourcePacks 列表用纯文件名，不带 "file/" 前缀
+                            if (!mc.gameSettings.resourcePacks.contains(packName)) {
                                 File rpFile = new File(mc.mcDataDir, "resourcepacks/" + packName);
                                 if (rpFile.exists()) {
-                                    mc.gameSettings.resourcePacks.add(packId);
-                                    LOGGER.info("Resource pack pre-added: {}", packId);
+                                    mc.gameSettings.resourcePacks.add(packName);
+                                    LOGGER.info("Resource pack pre-added: {}", packName);
                                 }
                             }
                         }
