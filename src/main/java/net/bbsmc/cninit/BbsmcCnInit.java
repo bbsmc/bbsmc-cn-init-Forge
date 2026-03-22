@@ -55,9 +55,8 @@ public class BbsmcCnInit {
      */
     @Mod.EventHandler
     public void onConstruction(FMLConstructionEvent event) {
-        // 无条件设置语言为中文（和 i18n 一样，在资源加载前执行）
-        setupLangEarly();
-        // config 加载延迟到 tick 阶段（此时 mc.mcDataDir 可能还未就绪）
+        // 在资源加载前设置语言和资源包（和 i18n 一样）
+        setupEarly();
     }
 
     @Mod.EventHandler
@@ -66,19 +65,43 @@ public class BbsmcCnInit {
     }
 
     /**
-     * 早期语言设置：在资源加载前直接修改字段，无需 refreshResources()。
-     * 参考 CFPAOrg/I18nUpdateMod 的实现方式。
+     * 早期设置：在资源加载前直接修改 gameSettings，无需 refreshResources()。
+     * MC 后续初始化时自然会用这些设置加载资源。
      */
-    /**
-     * 早期语言设置：在资源加载前直接修改 gameSettings.language。
-     * 参考 CFPAOrg/I18nUpdateMod 的实现，不检查 null、不 try-catch，
-     * 因为在 FMLConstructionEvent 阶段 Minecraft 实例和 gameSettings 已经初始化。
-     */
-    private static void setupLangEarly() {
+    private static void setupEarly() {
         Minecraft mc = Minecraft.getMinecraft();
+
+        // 1. 设置语言为中文
         if (!"zh_cn".equals(mc.gameSettings.language)) {
             mc.gameSettings.language = "zh_cn";
             LOGGER.info("Language pre-set to zh_cn");
+        }
+
+        // 2. 读取 modpack_info.json 并添加资源包
+        try {
+            File configFile = new File(mc.mcDataDir, "config/modpack_info.json");
+            if (configFile.exists()) {
+                try (InputStreamReader reader = new InputStreamReader(
+                        new FileInputStream(configFile), StandardCharsets.UTF_8)) {
+                    JsonObject config = GSON.fromJson(reader, JsonObject.class);
+                    JsonArray packsArray = config.getAsJsonArray("language_packs");
+                    if (packsArray != null) {
+                        for (int i = 0; i < packsArray.size(); i++) {
+                            String packName = packsArray.get(i).getAsString();
+                            String packId = "file/" + packName;
+                            if (!mc.gameSettings.resourcePacks.contains(packId)) {
+                                File rpFile = new File(mc.mcDataDir, "resourcepacks/" + packName);
+                                if (rpFile.exists()) {
+                                    mc.gameSettings.resourcePacks.add(packId);
+                                    LOGGER.info("Resource pack pre-added: {}", packId);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Failed to pre-add resource packs: {}", e.getMessage());
         }
     }
 
