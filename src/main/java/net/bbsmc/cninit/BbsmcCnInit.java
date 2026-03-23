@@ -111,7 +111,8 @@ public class BbsmcCnInit {
                 .ifPresent(lang -> {
                     mc.getLanguageManager().setSelected(lang);
                     mc.options.languageCode = targetLang;
-                    mc.options.save();
+                    // 不调用 save()：初始化阶段其他模组可能未就绪，
+                    // 字段修改在内存中立即生效，游戏正常退出时自动保存
                     LOGGER.info("Language set to '{}'", targetLang);
                 });
             languageChanged = true;
