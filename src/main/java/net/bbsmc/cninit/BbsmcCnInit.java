@@ -170,7 +170,8 @@ public class BbsmcCnInit {
                 .ifPresent(lang -> {
                     mc.getLanguageManager().setCurrentLanguage(lang);
                     mc.gameSettings.language = targetLang;
-                    mc.gameSettings.saveOptions();
+                    // 不调用 saveOptions()：初始化阶段其他模组可能未就绪，
+                    // 字段修改在内存中立即生效，游戏正常退出时自动保存
                     LOGGER.info("Language set to '{}'", targetLang);
                 });
             languageChanged = true;
@@ -211,7 +212,7 @@ public class BbsmcCnInit {
                 }
                 mc.gameSettings.resourcePacks.clear();
                 mc.gameSettings.resourcePacks.addAll(packNames);
-                mc.gameSettings.saveOptions();
+                // 不调用 saveOptions()：同上
 
                 rpRepo.setRepositories(currentSelected);
             }
