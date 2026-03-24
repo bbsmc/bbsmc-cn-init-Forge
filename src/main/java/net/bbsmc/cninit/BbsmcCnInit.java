@@ -68,7 +68,7 @@ public class BbsmcCnInit {
                 .ifPresent(lang -> {
                     mc.getLanguageManager().setSelected(lang);
                     mc.options.languageCode = targetLang;
-                    mc.options.save();
+                    // 不调用 save()：初始化阶段其他模组可能未就绪，字段修改在内存中生效
                     LOGGER.info("Language set to '{}'", targetLang);
                 });
             languageChanged = true;
