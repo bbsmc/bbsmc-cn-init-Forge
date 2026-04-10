@@ -18,6 +18,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,6 +47,7 @@ public class BbsmcCnInit {
     private static File configFile = null;
 
     public BbsmcCnInit() {
+        if (FMLEnvironment.dist != Dist.CLIENT) return;
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
         MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
     }
