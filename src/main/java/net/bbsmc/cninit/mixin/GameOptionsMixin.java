@@ -47,15 +47,22 @@ public class GameOptionsMixin {
             JsonArray packsArray = config.getAsJsonArray("language_packs");
             if (packsArray != null) {
                 File rpDir = new File(gameDir, "resourcepacks");
+                List<String> mutablePacks = new ArrayList<>(this.resourcePacks);
+                boolean changed = false;
+                // options.resourcePacks 列表末尾 = 最高优先级（FallbackResourceManager 末尾向前查找）
+                // 强制把汉化包放到列表末尾，覆盖其他第三方资源包
                 for (int i = 0; i < packsArray.size(); i++) {
                     String packName = packsArray.get(i).getAsString();
                     String packId = "file/" + packName;
-                    if (new File(rpDir, packName).exists()
-                            && !this.resourcePacks.contains(packId)) {
-                        List<String> newList = new ArrayList<>(this.resourcePacks);
-                        newList.add(packId);
-                        this.resourcePacks = newList;
+                    if (!new File(rpDir, packName).exists()) continue;
+                    boolean removed = mutablePacks.remove(packId);
+                    mutablePacks.add(packId);
+                    if (!removed || mutablePacks.indexOf(packId) != this.resourcePacks.indexOf(packId)) {
+                        changed = true;
                     }
+                }
+                if (changed) {
+                    this.resourcePacks = mutablePacks;
                 }
             }
 
