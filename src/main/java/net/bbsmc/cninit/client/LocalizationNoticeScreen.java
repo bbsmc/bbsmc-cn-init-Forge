@@ -102,7 +102,8 @@ public class LocalizationNoticeScreen extends GuiScreen {
                 i += 2;
             } else {
                 current.append(text.charAt(i));
-                if (this.fontRenderer.getStringWidth(current.toString()) > maxWidth) {
+                // 1.10.2 的 GuiScreen 字段名为 fontRendererObj（1.12 起改为 fontRenderer）
+                if (this.fontRendererObj.getStringWidth(current.toString()) > maxWidth) {
                     current.deleteCharAt(current.length() - 1);
                     wrappedLines.add(current.toString());
                     current = new StringBuilder(formatting.toString());
@@ -121,7 +122,7 @@ public class LocalizationNoticeScreen extends GuiScreen {
         this.drawDefaultBackground();
 
         // 标题
-        this.drawCenteredString(this.fontRenderer, TITLE_TEXT, this.width / 2, 15, 0xFFFFFF);
+        this.drawCenteredString(this.fontRendererObj, TITLE_TEXT, this.width / 2, 15, 0xFFFFFF);
 
         // 须知文案
         int textX = 30;
@@ -130,7 +131,7 @@ public class LocalizationNoticeScreen extends GuiScreen {
 
         for (String line : wrappedLines) {
             if (!line.isEmpty()) {
-                this.fontRenderer.drawStringWithShadow(line, textX, textY, 0xDDDDDD);
+                this.fontRendererObj.drawStringWithShadow(line, textX, textY, 0xDDDDDD);
             }
             textY += lineHeight;
         }

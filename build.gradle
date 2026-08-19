@@ -1,55 +1,30 @@
+// 1.10.2 需要 ForgeGradle 2 构建链（FG5/6 最低只支持 1.12.2；
+// anatawa12 的 FG2.3 fork 也只放行 MC>=1.12）。
+// 使用原版 FG 2.2-SNAPSHOT（2021-08 Forge 重新发布版）+ Gradle 4.10.3 + JDK 8，
+// 老 MCP 工件已由 Forge 官方重新托管到 maven.minecraftforge.net。
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net/' }
         mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:[6.0,6.2)'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
+apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'maven-publish'
 
 version = mod_version
 group = mod_group
-archivesBaseName = "bbsmc-cn-init-1.12.2-Forge"
+archivesBaseName = "bbsmc-cn-init-1.10.2-Forge"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-    mappings channel: 'snapshot', version: '20171003-1.12'
-
-    runs {
-        client {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                bbsmc_cn_init {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                bbsmc_cn_init {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
-}
-
-dependencies {
-    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2864'
+    version = '1.10.2-12.18.3.2511'
+    runDir = 'run'
+    mappings = 'snapshot_20161102'
 }
 
 jar {
@@ -61,12 +36,25 @@ jar {
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor": "bbsmc",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "FMLCorePluginContainsFMLMod": "true",
-            "ForceLoadAsMod": "true"
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
+    // FG2 的 reobfJar 就地把 build/libs 下的 jar 重映射回 SRG 名
     finalizedBy 'reobfJar'
+}
+
+// FG2 不自动替换 mcmod.info 中的变量，需手动展开
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version.split('-')[0]
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version': project.version, 'mcversion': project.minecraft.version.split('-')[0]
+    }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {

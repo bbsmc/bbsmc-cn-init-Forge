@@ -17,6 +17,8 @@ import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,7 +31,9 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod(modid = BbsmcCnInit.MODID, name = BbsmcCnInit.NAME, version = BbsmcCnInit.VERSION, clientSideOnly = true)
+// 1.10.2 的 @Mod 没有 clientSideOnly 属性（1.12 才加入），
+// 服务端保护改用 FMLLaunchHandler.side() 判断
+@Mod(modid = BbsmcCnInit.MODID, name = BbsmcCnInit.NAME, version = BbsmcCnInit.VERSION)
 public class BbsmcCnInit {
     public static final String MODID = "bbsmc_cn_init";
     public static final String NAME = "BBSMC-CN-Init";
@@ -51,16 +55,23 @@ public class BbsmcCnInit {
     /**
      * FMLConstructionEvent — 最早的阶段，在资源加载之前执行。
      * 和 i18n 一样，直接设置 gameSettings.language 字段，
-     * MC 后续初始化时自然会用 zh_cn 加载资源，无需 refreshResources()。
+     * MC 后续初始化时自然会用 zh_CN 加载资源，无需 refreshResources()。
+     * 1.11 之前语言代码为首字母大写（zh_CN），1.11 起才改为全小写。
      */
     @Mod.EventHandler
     public void onConstruction(FMLConstructionEvent event) {
+        if (FMLLaunchHandler.side() != Side.CLIENT) {
+            return;
+        }
         // 在资源加载前设置语言和资源包（和 i18n 一样）
         setupEarly();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
+        if (FMLLaunchHandler.side() != Side.CLIENT) {
+            return;
+        }
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -71,10 +82,10 @@ public class BbsmcCnInit {
     private static void setupEarly() {
         Minecraft mc = Minecraft.getMinecraft();
 
-        // 1. 设置语言为中文
-        if (!"zh_cn".equals(mc.gameSettings.language)) {
-            mc.gameSettings.language = "zh_cn";
-            LOGGER.info("Language pre-set to zh_cn");
+        // 1. 设置语言为中文（1.10.2 语言代码为 zh_CN）
+        if (!"zh_CN".equals(mc.gameSettings.language)) {
+            mc.gameSettings.language = "zh_CN";
+            LOGGER.info("Language pre-set to zh_CN");
         }
 
         // 2. 读取 modpack_info.json 并添加资源包
@@ -88,7 +99,7 @@ public class BbsmcCnInit {
                     if (packsArray != null) {
                         for (int i = 0; i < packsArray.size(); i++) {
                             String packName = packsArray.get(i).getAsString();
-                            // 1.12.2 的 resourcePacks 列表用纯文件名，不带 "file/" 前缀
+                            // 1.10.2 的 resourcePacks 列表用纯文件名，不带 "file/" 前缀
                             if (!mc.gameSettings.resourcePacks.contains(packName)) {
                                 File rpFile = new File(mc.mcDataDir, "resourcepacks/" + packName);
                                 if (rpFile.exists()) {
@@ -160,10 +171,10 @@ public class BbsmcCnInit {
      */
     public static void setupLanguageAndPacks(Minecraft mc, List<String> languagePacks) {
         String currentLang = mc.getLanguageManager().getCurrentLanguage().getLanguageCode();
-        String targetLang = "zh_cn";
+        String targetLang = "zh_CN";
         boolean languageChanged = false;
         if (!targetLang.equals(currentLang)) {
-            LOGGER.info("Current language is '{}', switching to zh_cn", currentLang);
+            LOGGER.info("Current language is '{}', switching to zh_CN", currentLang);
             mc.getLanguageManager().getLanguages().stream()
                 .filter(lang -> targetLang.equals(lang.getLanguageCode()))
                 .findFirst()
@@ -244,7 +255,8 @@ public class BbsmcCnInit {
         }
 
         Minecraft mc = Minecraft.getMinecraft();
-        if (mc.currentScreen == null && mc.world == null) {
+        // 1.10.2 中 Minecraft 的 world 字段名为 theWorld
+        if (mc.currentScreen == null && mc.theWorld == null) {
             return;
         }
 
