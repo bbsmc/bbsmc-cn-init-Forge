@@ -124,7 +124,8 @@ public class BbsmcCnInit {
         if (!configLoaded || userAgreement) {
             return null;
         }
-        return new LocalizationNoticeScreen(modpackJson, languagePacks, configFile);
+        // 兜底路径（tick 首屏弹窗为主路径）：无 parent 信息，同意后回原版主菜单
+        return new LocalizationNoticeScreen(modpackJson, languagePacks, configFile, null);
     }
 
     private static void loadConfig() {
@@ -262,5 +263,11 @@ public class BbsmcCnInit {
 
         setupDone = true;
         loadConfig();
+        // 标题界面一出现就直接弹须知，不依赖用户点击单人/多人按钮——
+        // Custom Main Menu 等模组定制的菜单流程未必经过 GuiWorldSelection/GuiMultiplayer，
+        // 按钮拦截方案在这类整合包下永远不触发（Forever Stranded 实测踩坑）
+        if (!userAgreement) {
+            mc.displayGuiScreen(new LocalizationNoticeScreen(modpackJson, languagePacks, configFile, mc.currentScreen));
+        }
     }
 }

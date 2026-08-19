@@ -30,13 +30,16 @@ public class LocalizationNoticeScreen extends GuiScreen {
     private final JsonObject modpackJson;
     private final List<String> languagePacks;
     private final File configFile;
+    /** 同意后返回的界面（保留 Custom Main Menu 等定制菜单，不强制回原版主菜单） */
+    private final GuiScreen parentScreen;
 
     private final List<String> wrappedLines = new ArrayList<>();
 
-    public LocalizationNoticeScreen(JsonObject modpackJson, List<String> languagePacks, File configFile) {
+    public LocalizationNoticeScreen(JsonObject modpackJson, List<String> languagePacks, File configFile, GuiScreen parentScreen) {
         this.modpackJson = modpackJson;
         this.languagePacks = languagePacks;
         this.configFile = configFile;
+        this.parentScreen = parentScreen;
     }
 
     @Override
@@ -83,7 +86,8 @@ public class LocalizationNoticeScreen extends GuiScreen {
 
         BbsmcCnInit.markAgreed();
         BbsmcCnInit.setupLanguageAndPacks(this.mc, languagePacks);
-        this.mc.displayGuiScreen(new GuiMainMenu());
+        // 回到弹窗前的界面，避免把 Custom Main Menu 定制菜单顶掉
+        this.mc.displayGuiScreen(this.parentScreen != null ? this.parentScreen : new GuiMainMenu());
     }
 
     private void wrapLine(String text, int maxWidth) {
